@@ -22,7 +22,6 @@ public class ProductController {
 
     @GetMapping(path="/all")
     public @ResponseBody List<Product> getAllProducts() {
-        // This returns a JSON or XML with the users
         return productService.findAllProducts();
     }
 
