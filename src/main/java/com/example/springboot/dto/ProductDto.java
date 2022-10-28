@@ -1,32 +1,22 @@
-package com.example.springboot.model;
+package com.example.springboot.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-@Entity
 @Data
 @JsonIgnoreProperties
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "products")
-public class Product {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ProductDto {
     private Integer id;
-
     private @NotNull String name;
     private @NotNull String imageURL;
     private @NotNull double price;
     private @NotNull String description;
     private @NotNull String slug;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    private @NotNull Integer categoryId;
 }

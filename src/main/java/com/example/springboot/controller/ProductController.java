@@ -1,47 +1,51 @@
 package com.example.springboot.controller;
 
-import com.example.springboot.model.Product;
+import com.example.springboot.common.ApiResponse;
+import com.example.springboot.dto.ProductDto;
+import com.example.springboot.model.Category;
+import com.example.springboot.repository.CategoryRepository;
 import com.example.springboot.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:3000/")
 @RestController
-@RequestMapping(path="/product") // This means URL's start with / (after Application path)
+@RequestMapping(path = "/product")
 public class ProductController {
     @Autowired
     private ProductService productService;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
-    @PostMapping(path="/add")
-    public @ResponseBody Product addNewProduct (@RequestBody Product product)
-    {
-        return productService.saveProduct(product);
+    @PostMapping(path = "/add")
+    public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto productDto) {
+        Optional<Category> optionalCategory = categoryRepository.findById(productDto.getCategoryId());
+        if(!optionalCategory.isPresent())
+        {
+            return new ResponseEntity<>(new ApiResponse(false, "fail"), HttpStatus.BAD_REQUEST);
+        }
+        productService.createProduct(productDto, optionalCategory.get());
+        return  new ResponseEntity<>(new ApiResponse(true, "success"), HttpStatus.CREATED);
     }
 
-    @GetMapping(path="/all")
-    public @ResponseBody List<Product> getAllProducts() {
-        return productService.findAllProducts();
+    @GetMapping(path = "/all")
+    public ResponseEntity<List<ProductDto>> getProducts() {
+        List<ProductDto> products = productService.getAllProducts();
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-
-    @GetMapping(path="/{slug}")
-    public @ResponseBody Product getOneProductsBySlug(@PathVariable String slug) {
-        // This returns a JSON or XML with the users
-        return productService.findProductBySlug(slug);
+    @PutMapping(path = "/update/{slug}")
+    public ResponseEntity<ApiResponse> updateProduct(@PathVariable(name = "slug") String slug, @RequestBody ProductDto productDto) throws Exception {
+        Optional<Category> optionalCategory = categoryRepository.findById(productDto.getCategoryId());
+        if(!optionalCategory.isPresent())
+        {
+            return new ResponseEntity<>(new ApiResponse(false, "fail"), HttpStatus.BAD_REQUEST);
+        }
+        productService.updateProduct(productDto, slug);
+        return  new ResponseEntity<>(new ApiResponse(true, "success"), HttpStatus.OK);
     }
-
-    @PutMapping("/edit")
-    public Product editProduct(@RequestBody Product product)
-    {
-        return productService.updateProduct(product);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public String deleteProduct(@PathVariable int id)
-    {
-        return productService.deleteProduct(id);
-    }
-
 }

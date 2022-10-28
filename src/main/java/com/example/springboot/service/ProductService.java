@@ -1,10 +1,13 @@
 package com.example.springboot.service;
 
+import com.example.springboot.dto.ProductDto;
+import com.example.springboot.model.Category;
 import com.example.springboot.model.Product;
 import com.example.springboot.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,48 +16,55 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    public List<Product> findAllProducts()
-    {
-        return productRepository.findAll();
+    public void createProduct(ProductDto productDto, Category category) {
+        Product product = new Product();
+        product.setName(productDto.getName());
+        product.setPrice(productDto.getPrice());
+        product.setImageURL(productDto.getImageURL());
+        product.setDescription(productDto.getDescription());
+        product.setSlug(productDto.getSlug());
+        product.setCategory(category);
+        productRepository.save(product);
     }
 
-    public Product findProductById(int id)
+    public ProductDto getProductDto(Product product)
     {
-        return productRepository.findById(id).orElse(null);
+        ProductDto productDto = new ProductDto();
+        productDto.setId(product.getId());
+        productDto.setName(product.getName());
+        productDto.setDescription(product.getDescription());
+        productDto.setPrice(product.getPrice());
+        productDto.setImageURL(product.getImageURL());
+        productDto.setSlug(product.getSlug());
+        productDto.setCategoryId(product.getCategory().getId());
+        return  productDto;
     }
 
-    public Product findProductBySlug(String slug)
-    {
-        var existProduct = productRepository.findBySlug(slug);
-        if(existProduct == null){
-            return null;
+    public List<ProductDto> getAllProducts() {
+        List<Product> products = productRepository.findAll();
+        List<ProductDto> productDtos = new ArrayList<>();
+
+        for (Product product: products) {
+            productDtos.add(getProductDto(product));
         }
-        return existProduct;
+
+        return productDtos;
     }
 
-    public Product saveProduct(Product product)
-    {
-        return productRepository.save(product);
+    public void updateProduct(ProductDto productDto, String slug) throws Exception {
+        Product existProduct = productRepository.findBySlug(slug);
+        Optional<Product> existProductWithId = productRepository.findById(existProduct.getId());
+        if(existProduct == null){
+            throw new Exception("Sản phẩm không tồn tại");
+        }
+        Product product = existProductWithId.get();
+        product.setName(productDto.getName());
+        product.setPrice(productDto.getPrice());
+        product.setImageURL(productDto.getImageURL());
+        product.setDescription(productDto.getDescription());
+        product.setSlug(productDto.getSlug());
+        product.setCategory(existProductWithId.get().getCategory());
+        productRepository.save(product);
+
     }
-
-    public String deleteProduct(int id)
-    {
-        productRepository.deleteById(id);
-        return  "Delete Sucess: Product Id" + id;
-    }
-
-    public Product updateProduct(Product product)
-    {
-        Product existProduct = productRepository.findById(product.getId()).orElse(null);
-        existProduct.setName(product.getName());
-        existProduct.setPrice(product.getPrice());
-        existProduct.setSlug(product.getSlug());
-        existProduct.setImage(product.getImage());
-        existProduct.setCount(product.getCount());
-        existProduct.setDescription(product.getDescription());
-        return productRepository.save(existProduct);
-    }
-
-
-
 }
