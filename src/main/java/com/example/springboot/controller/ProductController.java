@@ -3,6 +3,7 @@ package com.example.springboot.controller;
 import com.example.springboot.common.ApiResponse;
 import com.example.springboot.dto.ProductDto;
 import com.example.springboot.model.Category;
+import com.example.springboot.model.Product;
 import com.example.springboot.repository.CategoryRepository;
 import com.example.springboot.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ public class ProductController {
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
+//   Update 1 sản phẩm bằng slug
     @PutMapping(path = "/update/{slug}")
     public ResponseEntity<ApiResponse> updateProduct(@PathVariable(name = "slug") String slug, @RequestBody ProductDto productDto) throws Exception {
         Optional<Category> optionalCategory = categoryRepository.findById(productDto.getCategoryId());
@@ -47,5 +49,27 @@ public class ProductController {
         }
         productService.updateProduct(productDto, slug);
         return  new ResponseEntity<>(new ApiResponse(true, "success"), HttpStatus.OK);
+    }
+
+//   Lấy ra 1 sản phẩm bằng slug
+    @GetMapping(path = "/{slug}")
+    public ResponseEntity<Product> getProduct(@PathVariable(name = "slug") String slug) {
+        Product existProduct = productService.getProductBySlug(slug);
+        if(existProduct == null)
+        {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(existProduct, HttpStatus.OK);
+    }
+
+    @DeleteMapping(path = "/delete/{slug}")
+    public ResponseEntity<ApiResponse> deleteProduct(@PathVariable(name = "slug") String slug) throws Exception {
+        Product existProduct = productService.getProductBySlug(slug);
+        if(existProduct == null)
+        {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        productService.deleteProduct(slug);
+        return new ResponseEntity<>(new ApiResponse(true, "Delete Successful Product: " + existProduct.getName()), HttpStatus.OK);
     }
 }

@@ -65,6 +65,18 @@ public class ProductService {
         product.setSlug(productDto.getSlug());
         product.setCategory(existProductWithId.get().getCategory());
         productRepository.save(product);
+    }
 
+    public Product getProductBySlug(String slug) {
+        Product existProduct = productRepository.findBySlug(slug);
+        return existProduct;
+    }
+
+    public void deleteProduct(String slug) throws Exception {
+        Product existProduct = productRepository.findBySlug(slug);
+        if(existProduct == null){
+            throw new Exception("Sản phẩm không tồn tại");
+        }
+        productRepository.deleteById(existProduct.getId());
     }
 }
