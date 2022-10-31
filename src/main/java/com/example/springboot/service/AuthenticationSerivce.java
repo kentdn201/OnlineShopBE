@@ -6,6 +6,9 @@ import com.example.springboot.repository.TokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.naming.AuthenticationException;
+import java.util.Objects;
+
 @Service
 public class AuthenticationSerivce {
     @Autowired
@@ -16,5 +19,26 @@ public class AuthenticationSerivce {
 
     public AuthenticationToken getToken(User user) {
         return tokenRepository.findByUser(user);
+    }
+
+    public User getUser(String token)
+    {
+        AuthenticationToken authenticationToken = tokenRepository.findByToken(token);
+//       Nếu Token này không tồn tại thì chả về null
+        if(Objects.isNull(authenticationToken))
+        {
+            return null;
+        }
+        return authenticationToken.getUser();
+    }
+
+    public void authenticate(String token) throws AuthenticationException {
+        if(Objects.nonNull(token))
+        {
+            throw new AuthenticationException("Token isn't present");
+        }
+        if(Objects.isNull(getUser(token))){
+            throw new AuthenticationException("Token not valid");
+        }
     }
 }

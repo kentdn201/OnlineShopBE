@@ -1,6 +1,7 @@
 package com.example.springboot.service;
 
 import com.example.springboot.dto.ProductDto;
+import com.example.springboot.exceptions.CustomException;
 import com.example.springboot.model.Category;
 import com.example.springboot.model.Product;
 import com.example.springboot.repository.ProductRepository;
@@ -78,5 +79,14 @@ public class ProductService {
             throw new Exception("Sản phẩm không tồn tại");
         }
         productRepository.deleteById(existProduct.getId());
+    }
+
+    public Product findById(Integer productId) {
+        Optional<Product> existProduct = productRepository.findById(productId);
+        if(existProduct.isEmpty())
+        {
+            throw new CustomException("Product + " + productId + " is empty");
+        }
+        return existProduct.get();
     }
 }
