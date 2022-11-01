@@ -85,7 +85,7 @@ public class ProductService {
         Optional<Product> existProduct = productRepository.findById(productId);
         if(existProduct.isEmpty())
         {
-            throw new CustomException("Product + " + productId + " is empty");
+            throw new CustomException("Sản phẩm có mã là: " + productId + " không tồn tại");
         }
         return existProduct.get();
     }

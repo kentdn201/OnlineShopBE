@@ -5,14 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 @JsonIgnoreProperties
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddToCartDto {
-    private Integer id;
-    private @NotNull Integer productId;
-    private @NotNull int quantity;
+public class CartDto {
+    List<CartItemDto> cartItems;
+    private double totalPrice;
 }

@@ -33,7 +33,7 @@ public class AuthenticationSerivce {
     }
 
     public void authenticate(String token) throws AuthenticationException {
-        if(Objects.nonNull(token))
+        if(Objects.isNull(token))
         {
             throw new AuthenticationException("Token isn't present");
         }

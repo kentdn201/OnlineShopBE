@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data

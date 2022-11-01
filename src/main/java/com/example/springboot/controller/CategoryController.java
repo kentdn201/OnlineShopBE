@@ -1,13 +1,18 @@
 package com.example.springboot.controller;
 
 import com.example.springboot.common.ApiResponse;
+import com.example.springboot.dto.ProductDto;
 import com.example.springboot.model.Category;
+import com.example.springboot.model.Product;
+import com.example.springboot.repository.ProductRepository;
 import com.example.springboot.service.CategoryService;
+import com.example.springboot.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +22,9 @@ import java.util.Optional;
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private ProductService productService;
 
     @PostMapping(path="/create")
     public @ResponseBody ResponseEntity<ApiResponse> addNewCategory (@RequestBody Category category)
@@ -63,6 +71,30 @@ public class CategoryController {
         categoryService.deleteCategory(id);
         return new ResponseEntity<>(new ApiResponse(true, "Xóa Thành Công Danh Mục:" + " " + existCategory.get().getName()),
                 HttpStatus.OK);
+    }
+
+    @GetMapping("{slug}/san-pham")
+    public List<ProductDto> getProductsByCategory(@PathVariable(name = "slug") String slug)
+    {
+//      Danh sách hiện tại của sản phẩm
+        List<ProductDto> listProductDto = productService.getAllProducts();
+
+//      Một danh sách mới
+        List<ProductDto> listProduct = new ArrayList<>();
+
+//      Slug của category cần tìm
+        Category existCategory = categoryService.findBySlug(slug);
+
+//      Vòng lặp for tìm các sản phẩm có category_id = với id của danh mục cần tìm rồi thêm vào mảng mới
+        for (ProductDto product: listProductDto)
+        {
+            if(product.getCategoryId() == existCategory.getId())
+            {
+                listProduct.add(product);
+            }
+        }
+
+        return listProduct;
     }
 
 }
