@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -29,4 +31,7 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+//
+//    @ManyToMany(mappedBy = "order_products")
+//    private Set<Order> orders_products = new HashSet<>();
 }

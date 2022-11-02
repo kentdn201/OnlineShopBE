@@ -3,6 +3,8 @@ package com.example.springboot.controller;
 import com.example.springboot.dto.ResponseDto;
 import com.example.springboot.dto.SignInDto;
 import com.example.springboot.dto.SignupDto;
+import com.example.springboot.model.User;
+import com.example.springboot.service.AuthenticationSerivce;
 import com.example.springboot.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AuthenticationSerivce authenticationSerivce;
+
     @PostMapping("/signup")
     public ResponseDto signUp(@RequestBody SignupDto signupDto) {
         return userService.signUp(signupDto);
@@ -24,6 +29,12 @@ public class UserController {
     public ResponseDto signIn(@RequestBody SignInDto signInDto)
     {
         return userService.signIn(signInDto);
+    }
+
+    @GetMapping("/{token}/get")
+    public User getUser(@PathVariable(name = "token") String token)
+    {
+        return authenticationSerivce.getUser(token);
     }
 
 }
