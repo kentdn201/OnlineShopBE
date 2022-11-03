@@ -5,6 +5,7 @@ import com.example.springboot.dto.ProductDto;
 import com.example.springboot.model.Category;
 import com.example.springboot.model.Product;
 import com.example.springboot.repository.CategoryRepository;
+import com.example.springboot.repository.ProductRepository;
 import com.example.springboot.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,15 +24,27 @@ public class ProductController {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private ProductRepository productRepository;
+
+//   Để Thêm 1 sản phẩm thì điều kiện cần là Slug không được trùng với các sản phẩm còn lại
+//   Danh mục của sản phẩm đó phải tồn tại.
     @PostMapping(path = "/add")
     public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto productDto) {
         Optional<Category> optionalCategory = categoryRepository.findById(productDto.getCategoryId());
+        Optional<Product> existProductSlug = Optional.ofNullable(productService.getProductBySlug(productDto.getSlug()));
         if(!optionalCategory.isPresent())
         {
-            return new ResponseEntity<>(new ApiResponse(false, "fail"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ApiResponse(false, "Danh Mục Này Đã Không Còn Trong Hệ Thống"), HttpStatus.BAD_REQUEST);
         }
+        if(existProductSlug.isPresent())
+        {
+            return new ResponseEntity<>(new ApiResponse(false, "Slug này đã tồn tại trong hệ thống"), HttpStatus.BAD_REQUEST);
+        }
+
+
         productService.createProduct(productDto, optionalCategory.get());
-        return  new ResponseEntity<>(new ApiResponse(true, "success"), HttpStatus.CREATED);
+        return  new ResponseEntity<>(new ApiResponse(true, "Thêm Thành Công"), HttpStatus.CREATED);
     }
 
     @GetMapping(path = "/all")
