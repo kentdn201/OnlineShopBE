@@ -27,6 +27,12 @@ public class CategoryController {
     @PostMapping(path="/create")
     public @ResponseBody ResponseEntity<ApiResponse> addNewCategory (@RequestBody Category category)
     {
+        Optional<Category> existCategory = Optional.ofNullable(categoryService.findBySlug(category.getSlug()));
+        if(existCategory.isPresent())
+        {
+            return new ResponseEntity<>(new ApiResponse(false, "Slug của danh mục đã tồn tại"),
+                    HttpStatus.BAD_REQUEST);
+        }
         categoryService.saveCategory(category);
         return new ResponseEntity<>(new ApiResponse(true, "Thêm Danh Mục Mới Thành Công:" + " " + category.getName()),
                 HttpStatus.CREATED);
@@ -42,6 +48,12 @@ public class CategoryController {
     public @ResponseBody Category getOneCategoryBySlug(@PathVariable String slug) {
         // This returns a JSON or XML with the users
         return categoryService.findBySlug(slug);
+    }
+
+    @GetMapping(path = "/danh-muc/{id}")
+    public @ResponseBody Optional<Category> getOneCategoryById(@PathVariable Integer id)
+    {
+        return categoryService.findById(id);
     }
 
     @PutMapping(path="/update/{slug}")
