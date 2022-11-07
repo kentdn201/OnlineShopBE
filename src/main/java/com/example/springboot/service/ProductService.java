@@ -89,4 +89,14 @@ public class ProductService {
         }
         return existProduct.get();
     }
+
+    public List<Product> searchProducts(String keyword)
+    {
+        if(keyword != null)
+        {
+            return productRepository.searchProducts(keyword);
+        }
+
+        return productRepository.findAll();
+    }
 }

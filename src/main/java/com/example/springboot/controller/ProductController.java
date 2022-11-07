@@ -86,4 +86,10 @@ public class ProductController {
         productService.deleteProduct(slug);
         return new ResponseEntity<>(new ApiResponse(true, "Delete Successful Product: " + existProduct.getName()), HttpStatus.OK);
     }
+
+    @GetMapping(path = "/search")
+    public ResponseEntity<List<Product>> searchProducts(String keyword)
+    {
+        return ResponseEntity.ok(productService.searchProducts(keyword));
+    }
 }
