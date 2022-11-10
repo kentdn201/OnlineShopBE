@@ -31,7 +31,7 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-//
-//    @ManyToMany(mappedBy = "order_products")
-//    private Set<Order> orders_products = new HashSet<>();
+
+    @OneToMany(mappedBy = "product")
+    private Set<OrderProduct> orderProducts;
 }

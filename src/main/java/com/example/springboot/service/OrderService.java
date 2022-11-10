@@ -1,64 +1,128 @@
 package com.example.springboot.service;
 
-import com.example.springboot.dto.checkout.CheckoutItemDto;
-import com.stripe.Stripe;
-import com.stripe.exception.StripeException;
-import com.stripe.model.checkout.Session;
-import com.stripe.param.checkout.SessionCreateParams;
-import org.springframework.beans.factory.annotation.Value;
+import com.example.springboot.dto.order.OrderDetailDto;
+import com.example.springboot.dto.order.OrderProductDto;
+import com.example.springboot.dto.order.OrderShowDto;
+import com.example.springboot.exceptions.CustomException;
+import com.example.springboot.model.Enum.Role;
+import com.example.springboot.model.Order;
+import com.example.springboot.model.User;
+import com.example.springboot.repository.OrderRepository;
+import com.example.springboot.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class OrderService {
+    @Autowired
+    private OrderRepository orderRepository;
 
-    @Value("${BASE_URL}")
-    private String baseURL;
+    @Autowired
+    private UserRepository userRepository;
 
-    @Value("${STRIPE_SECRET_KEY}")
-    private String apiKey;
+    @Autowired
+    private OrderProductService orderProductService;
 
-    public Session createSesion(List<CheckoutItemDto> checkoutItemDtoList) throws StripeException {
-        String successURL = baseURL + "payment/success";
+    public List<Order> getAllOrders()
+    {
+        return orderRepository.findAll();
+    }
 
-        String failureURL = baseURL + "payment/fail";
+    public List<OrderShowDto> getOrdersByUserId(Integer userId)
+    {
+        List<OrderShowDto> orderShowDtos = getAllOrderDto();
+        List<OrderShowDto> newOrderShowDtos = new ArrayList<>();
 
-        Stripe.apiKey = apiKey;
-
-        List<SessionCreateParams.LineItem> sessionItemList = new ArrayList<>();
-
-        for(CheckoutItemDto checkoutItemDto: checkoutItemDtoList)
+        for (OrderShowDto dto: orderShowDtos)
         {
-            sessionItemList.add(createSessionItem(checkoutItemDto));
+            if(dto.getUserId() == userId)
+            {
+                newOrderShowDtos.add(dto);
+            }
+        }
+        return newOrderShowDtos;
+    }
+
+    public OrderDetailDto getOrdersDetail(Integer id, Integer userId)
+    {
+//      Lấy ra đơn hàng cần tìm
+        Optional<Order> orderDetail = orderRepository.findById(id);
+
+//      Lấy ra thông tin người dùng
+        Optional<User> existUser = userRepository.findById(userId);
+
+        List<OrderProductDto> orderProductsDtos = orderProductService.getAllOrderProductsDtos();
+        List<OrderProductDto> newOrderProductsDto = new ArrayList<>();
+        OrderDetailDto orderDetailDto = new OrderDetailDto();
+
+//      Check xem order muốn tìm có tồn tại hay không
+        if(!orderDetail.isPresent())
+        {
+            throw new CustomException("Đơn hàng với mã: " + id + " không tồn tại");
         }
 
-        SessionCreateParams params = SessionCreateParams.builder()
-                .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
-                .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setCancelUrl(failureURL)
-                .setSuccessUrl(successURL)
-                .addAllLineItem(sessionItemList)
-                .build();
+//      Check user còn tồn tại hay không và là user thì không được truy cập đến các order khác
+        if(existUser.isPresent())
+        {
+            if(existUser.get().getRole() == Role.User)
+            {
+                if(orderDetail.get().getUser().getId() != userId)
+                {
+                    throw new CustomException("Bạn không có quyền truy cập vào " + id);
+                }
+            }
+        } else {
+            throw new CustomException("Người Dùng Không Tồn Tại");
+        }
 
-        return Session.create(params);
+        orderDetailDto.setId(orderDetail.get().getId());
+        orderDetailDto.setUserId(orderDetail.get().getUser().getId());
+        orderDetailDto.setCreateDate(orderDetail.get().getCreatedDate());
+        orderDetailDto.setOrderStatus(orderDetail.get().getOrderStatus());
+        for (OrderProductDto dto: orderProductsDtos)
+        {
+            if(orderDetailDto.getId() == dto.getOrderId())
+            {
+                newOrderProductsDto.add(dto);
+            }
+        }
+        orderDetailDto.setOrderProductDtos(newOrderProductsDto);
+        return orderDetailDto;
     }
 
-    private SessionCreateParams.LineItem createSessionItem(CheckoutItemDto checkoutItemDto) {
-
-        return SessionCreateParams.LineItem.builder()
-                .setPriceData(createPriceData(checkoutItemDto))
-                .setQuantity(Long.parseLong(String.valueOf(checkoutItemDto.getQuantity()))).build();
+    public Order createOrder(Order order)
+    {
+        order.setCreatedDate(new Date());
+        return orderRepository.save(order);
     }
 
-    private SessionCreateParams.LineItem.PriceData createPriceData(CheckoutItemDto checkoutItemDto) {
-        return SessionCreateParams.LineItem.PriceData.builder()
-                .setCurrency("usd")
-                .setUnitAmount((long)checkoutItemDto.getPrice() * 100)
-                .setProductData(
-                        SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                .setName(checkoutItemDto.getProductName()).build()
-                ).build();
+    public void updateOrder(Order order)
+    {
+        orderRepository.save(order);
+    }
+
+    public List<OrderShowDto> getAllOrderDto()
+    {
+        List<Order> orderList = orderRepository.findAll();
+        List<OrderShowDto> orderShowDtos = new ArrayList<>();
+
+        for (Order order: orderList)
+        {
+            orderShowDtos.add(getOrderDto(order));
+        }
+
+        return orderShowDtos;
+    }
+
+    public OrderShowDto getOrderDto(Order order)
+    {
+        OrderShowDto orderShowDto = new OrderShowDto();
+        orderShowDto.setId(order.getId());
+        orderShowDto.setCreateDate(order.getCreatedDate());
+        orderShowDto.setUserId(order.getUser().getId());
+        orderShowDto.setOrderStatus(order.getOrderStatus());
+        return orderShowDto;
     }
 }

@@ -1,16 +1,17 @@
 package com.example.springboot.model;
 
 import com.example.springboot.model.Enum.OrderStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import javax.validation.Valid;
+import java.time.LocalDate;
+import java.util.*;
 
 @Entity
 @Data
@@ -19,33 +20,19 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "orders")
 public class Order {
-    //    1 người dùng thì có thể xem order của người đó thôi -> getAllById()
-//    admin thì có thể xem order của tất cả mọi người
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private Date createdDate;
-
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
-
-//    @ManyToMany
-//    @JoinTable(
-//            name = "order_products",
-//            joinColumns = @JoinColumn(name = "order_id"),
-//            inverseJoinColumns = @JoinColumn(name = "product_id")
-//    )
-//    private Set<Product> products = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    private int quantity;
-    private double totalPrice;
-
     private OrderStatus orderStatus;
 
+    @OneToMany(mappedBy = "order")
+    private List<OrderProduct> orderProducts = new ArrayList<>();
 }

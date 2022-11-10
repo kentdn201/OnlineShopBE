@@ -15,6 +15,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -89,4 +90,15 @@ public class UserService {
         return new ResponseDto(token.getToken(), "success");
 
     }
+
+    public User findByUserId(Integer id)
+    {
+        Optional<User> user = userRepository.findById(id);
+        if(!user.isPresent())
+        {
+            throw new CustomException("Người dùng với mã: " + id + " không tồn tại");
+        }
+        return user.get();
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.example.springboot.dto.checkout;
+package com.example.springboot.dto.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
@@ -9,11 +9,8 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties
 @AllArgsConstructor
 @NoArgsConstructor
-public class CheckoutItemDto {
-    private String productName;
+public class ProductOrderDto {
+    private Integer id;
     private int quantity;
-    private double price;
-    private long productId;
-    private int userId;
-
+    private Double currentPrice;
 }

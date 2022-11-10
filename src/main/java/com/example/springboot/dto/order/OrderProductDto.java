@@ -1,17 +1,17 @@
-package com.example.springboot.dto.cart;
+package com.example.springboot.dto.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @JsonIgnoreProperties
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartDto {
-    List<CartItemDto> cartItems;
-    private double totalPrice;
+public class OrderProductDto {
+    private Integer orderId;
+    private Integer productId;
+    private int quantity;
+    private Double currentPrice;
 }
