@@ -67,13 +67,13 @@ public class ProductController {
 
 //   Lấy ra 1 sản phẩm bằng slug
     @GetMapping(path = "/{slug}")
-    public ResponseEntity<Product> getProduct(@PathVariable(name = "slug") String slug) {
-        Product existProduct = productService.getProductBySlug(slug);
-        if(existProduct == null)
+    public ResponseEntity<ProductDto> getProduct(@PathVariable(name = "slug") String slug) {
+        ProductDto productDto = productService.getProductDtoBySlug(slug);
+        if(productDto == null)
         {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(existProduct, HttpStatus.OK);
+        return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/delete/{slug}")
@@ -88,7 +88,7 @@ public class ProductController {
     }
 
     @GetMapping(path = "/search")
-    public ResponseEntity<List<Product>> searchProducts(String keyword)
+    public ResponseEntity<List<ProductDto>> searchProducts(String keyword)
     {
         return ResponseEntity.ok(productService.searchProducts(keyword));
     }

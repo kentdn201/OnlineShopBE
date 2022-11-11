@@ -41,6 +41,21 @@ public class ProductService {
         return  productDto;
     }
 
+    public ProductDto getProductDtoBySlug(String slug)
+    {
+        Product product = productRepository.findBySlug(slug);
+        ProductDto productDto = new ProductDto();
+        productDto.setId(product.getId());
+        productDto.setName(product.getName());
+        productDto.setDescription(product.getDescription());
+        productDto.setPrice(product.getPrice());
+        productDto.setImageURL(product.getImageURL());
+        productDto.setSlug(product.getSlug());
+        productDto.setCategoryId(product.getCategory().getId());
+        return  productDto;
+    }
+
+
     public List<ProductDto> getAllProducts() {
         List<Product> products = productRepository.findAll();
         List<ProductDto> productDtos = new ArrayList<>();
@@ -90,13 +105,22 @@ public class ProductService {
         return existProduct.get();
     }
 
-    public List<Product> searchProducts(String keyword)
+    public List<ProductDto> searchProducts(String keyword)
     {
+        List<ProductDto> productDtos = getAllProducts();
+        List<ProductDto> newProductDtos = new ArrayList<>();
         if(keyword != null)
         {
-            return productRepository.searchProducts(keyword);
+            for (ProductDto dto: productDtos)
+            {
+                if(dto.getName().toLowerCase().contains(keyword.toLowerCase()))
+                {
+                    newProductDtos.add(dto);
+                }
+            }
+            return newProductDtos;
         }
 
-        return productRepository.findAll();
+        return productDtos;
     }
 }
