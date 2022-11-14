@@ -80,12 +80,17 @@ public class OrderController {
         Order order = new Order();
         order.setUser(existUser);
         order.setOrderStatus(OrderStatus.NotDelivery);
+        order.setAddress(orderDto.getAddress());
+        order.setTypePayment(orderDto.getTypePayment());
+        order.setNote(orderDto.getNote());
+        order.setPhoneNumber(orderDto.getPhoneNumber());
+
         orderService.createOrder(order);
 
         List<OrderProduct> orderProducts = new ArrayList<>();
         for(ProductOrderDto productOrderDto: productOrderDtos)
         {
-            orderProducts.add(orderProductService.createOrderProduct(new OrderProduct(order, productService.findById(productOrderDto.getId()), productOrderDto.getQuantity(), productOrderDto.getCurrentPrice())));
+            orderProducts.add(orderProductService.createOrderProduct(new OrderProduct(order, productService.findById(productOrderDto.getId()), productOrderDto.getQuantity(), productOrderDto.getPrice())));
         }
 
         order.setOrderProducts(orderProducts);

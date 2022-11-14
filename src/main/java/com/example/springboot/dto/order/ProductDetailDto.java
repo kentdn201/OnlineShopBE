@@ -5,12 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
+
 @Data
 @JsonIgnoreProperties
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductOrderDto {
+public class ProductDetailDto {
     private Integer id;
-    private int quantity;
-    private Double price;
+    private @NotNull String name;
+    private @NotNull String imageURL;
+    private @NotNull String slug;
 }

@@ -19,4 +19,8 @@ public class OrderShowDto {
     private Date createDate;
     private OrderStatus orderStatus;
     private Integer userId;
+    private String address;
+    private String typePayment;
+    private String note;
+    private String phoneNumber;
 }

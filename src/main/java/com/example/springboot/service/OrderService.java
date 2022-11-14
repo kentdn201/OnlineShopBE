@@ -81,6 +81,10 @@ public class OrderService {
         orderDetailDto.setUserId(orderDetail.get().getUser().getId());
         orderDetailDto.setCreateDate(orderDetail.get().getCreatedDate());
         orderDetailDto.setOrderStatus(orderDetail.get().getOrderStatus());
+        orderDetailDto.setAddress(orderDetail.get().getAddress());
+        orderDetailDto.setTypePayment(orderDetail.get().getTypePayment());
+        orderDetailDto.setNote(orderDetail.get().getNote());
+        orderDetailDto.setPhoneNumber(orderDetail.get().getPhoneNumber());
         for (OrderProductDto dto: orderProductsDtos)
         {
             if(orderDetailDto.getId() == dto.getOrderId())
@@ -123,6 +127,10 @@ public class OrderService {
         orderShowDto.setCreateDate(order.getCreatedDate());
         orderShowDto.setUserId(order.getUser().getId());
         orderShowDto.setOrderStatus(order.getOrderStatus());
+        orderShowDto.setAddress(order.getAddress());
+        orderShowDto.setTypePayment(order.getTypePayment());
+        orderShowDto.setNote(order.getNote());
+        orderShowDto.setPhoneNumber(order.getPhoneNumber());
         return orderShowDto;
     }
 }

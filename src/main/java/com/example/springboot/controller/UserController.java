@@ -37,4 +37,9 @@ public class UserController {
         return authenticationSerivce.getUser(token);
     }
 
+    @GetMapping("/{userId}")
+    public User getUserById(@PathVariable(name = "userId") Integer userId)
+    {
+        return userService.findByUserId(userId);
+    }
 }

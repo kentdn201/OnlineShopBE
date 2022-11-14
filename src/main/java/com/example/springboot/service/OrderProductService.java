@@ -38,7 +38,7 @@ public class OrderProductService {
         productOrderDto.setOrderId(orderProduct.getOrder().getId());
         productOrderDto.setProductId(orderProduct.getProduct().getId());
         productOrderDto.setQuantity(orderProduct.getQuantity());
-        productOrderDto.setCurrentPrice(orderProduct.getCurrentPrice());
+        productOrderDto.setPrice(orderProduct.getPrice());
         return productOrderDto;
     }
 }

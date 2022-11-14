@@ -14,10 +14,6 @@ import java.util.List;
 @JsonIgnoreProperties
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderDetailDto {
-    private Integer id;
-    private Date createDate;
-    private OrderStatus orderStatus;
-    private Integer userId;
+public class OrderDetailDto extends OrderShowDto {
     private List<OrderProductDto> orderProductDtos;
 }

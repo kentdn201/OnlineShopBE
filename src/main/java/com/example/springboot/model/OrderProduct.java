@@ -28,14 +28,14 @@ public class OrderProduct {
 
     private Integer quantity;
 
-    private Double currentPrice;
+    private Double price;
 
-    public OrderProduct(Order order, Product product, Integer quantity, Double currentPrice) {
+    public OrderProduct(Order order, Product product, Integer quantity, Double price) {
         id = new OrderProductKey();
         id.setOrder(order);
         id.setProduct(product);
         this.quantity = quantity;
-        this.currentPrice = currentPrice;
+        this.price = price;
     }
 
     @Transient
@@ -43,8 +43,4 @@ public class OrderProduct {
         return this.id.getProduct();
     }
 
-    @Transient
-    public Double getTotalPrice() {
-        return getProduct().getPrice() * getQuantity();
-    }
 }

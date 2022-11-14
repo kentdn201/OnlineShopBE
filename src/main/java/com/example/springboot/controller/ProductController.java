@@ -2,6 +2,7 @@ package com.example.springboot.controller;
 
 import com.example.springboot.common.ApiResponse;
 import com.example.springboot.dto.ProductDto;
+import com.example.springboot.dto.order.ProductDetailDto;
 import com.example.springboot.model.Category;
 import com.example.springboot.model.Product;
 import com.example.springboot.repository.CategoryRepository;
@@ -75,6 +76,18 @@ public class ProductController {
         }
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
+
+    @GetMapping(path = "/san-pham/{productId}")
+    public ResponseEntity<ProductDetailDto> getProductDetailDtoById(@PathVariable(name = "productId") Integer productId)
+    {
+        ProductDetailDto productDetailDto = productService.getProductDetailDtoById(productId);
+        if(productDetailDto == null)
+        {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(productDetailDto, HttpStatus.OK);
+    }
+
 
     @DeleteMapping(path = "/delete/{slug}")
     public ResponseEntity<ApiResponse> deleteProduct(@PathVariable(name = "slug") String slug) throws Exception {

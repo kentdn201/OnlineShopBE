@@ -13,5 +13,5 @@ public class OrderProductDto {
     private Integer orderId;
     private Integer productId;
     private int quantity;
-    private Double currentPrice;
+    private Double price;
 }

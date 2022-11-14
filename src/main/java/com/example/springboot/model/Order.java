@@ -31,6 +31,11 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private String address;
+    private String typePayment;
+    private String note;
+    private String phoneNumber;
+
     private OrderStatus orderStatus;
 
     @OneToMany(mappedBy = "order")

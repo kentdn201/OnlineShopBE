@@ -1,6 +1,7 @@
 package com.example.springboot.service;
 
 import com.example.springboot.dto.ProductDto;
+import com.example.springboot.dto.order.ProductDetailDto;
 import com.example.springboot.exceptions.CustomException;
 import com.example.springboot.model.Category;
 import com.example.springboot.model.Product;
@@ -103,6 +104,17 @@ public class ProductService {
             throw new CustomException("Sản phẩm có mã là: " + productId + " không tồn tại");
         }
         return existProduct.get();
+    }
+
+    public ProductDetailDto getProductDetailDtoById(Integer productId)
+    {
+        Optional<Product> product = productRepository.findById(productId);
+        ProductDetailDto productDetailDto = new ProductDetailDto();
+        productDetailDto.setId(product.get().getId());
+        productDetailDto.setName(product.get().getName());
+        productDetailDto.setImageURL(product.get().getImageURL());
+        productDetailDto.setSlug(product.get().getSlug());
+        return  productDetailDto;
     }
 
     public List<ProductDto> searchProducts(String keyword)

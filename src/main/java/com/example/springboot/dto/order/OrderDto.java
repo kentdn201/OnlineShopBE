@@ -12,5 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderDto {
+    private String address;
+    private String typePayment;
+    private String note;
+    private String phoneNumber;
     private List<ProductOrderDto> productOrderDtos;
 }
