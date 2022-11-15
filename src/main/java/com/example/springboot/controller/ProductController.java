@@ -4,8 +4,10 @@ import com.example.springboot.common.ApiResponse;
 import com.example.springboot.dto.ProductDto;
 import com.example.springboot.dto.order.ProductDetailDto;
 import com.example.springboot.model.Category;
+import com.example.springboot.model.OrderProduct;
 import com.example.springboot.model.Product;
 import com.example.springboot.repository.CategoryRepository;
+import com.example.springboot.repository.OrderProductRepository;
 import com.example.springboot.repository.ProductRepository;
 import com.example.springboot.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,9 @@ public class ProductController {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private OrderProductRepository orderProductRepository;
 
 //   Để Thêm 1 sản phẩm thì điều kiện cần là Slug không được trùng với các sản phẩm còn lại
 //   Danh mục của sản phẩm đó phải tồn tại.
@@ -94,10 +99,19 @@ public class ProductController {
         Product existProduct = productService.getProductBySlug(slug);
         if(existProduct == null)
         {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ApiResponse(false, "Không Tìm Thấy Sản Phảm Mà Bạn Muốn Xóa"), HttpStatus.NOT_FOUND);
+        }
+
+        List<OrderProduct> orderProducts = orderProductRepository.findAll();
+        for (OrderProduct orderProduct: orderProducts)
+        {
+            if(orderProduct.getProduct().getId() == existProduct.getId())
+            {
+                return new ResponseEntity<>(new ApiResponse(false, "Không Thể Xóa Sản Phẩm Đang Được Đặt Hàng"), HttpStatus.BAD_REQUEST);
+            }
         }
         productService.deleteProduct(slug);
-        return new ResponseEntity<>(new ApiResponse(true, "Delete Successful Product: " + existProduct.getName()), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse(true, "Xóa Thành Công Sản Phẩm: " + existProduct.getName()), HttpStatus.OK);
     }
 
     @GetMapping(path = "/search")

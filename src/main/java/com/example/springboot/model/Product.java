@@ -17,7 +17,6 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "products")
 public class Product {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -32,6 +31,4 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "product")
-    private Set<OrderProduct> orderProducts;
 }

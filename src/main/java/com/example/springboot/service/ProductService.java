@@ -5,6 +5,7 @@ import com.example.springboot.dto.order.ProductDetailDto;
 import com.example.springboot.exceptions.CustomException;
 import com.example.springboot.model.Category;
 import com.example.springboot.model.Product;
+import com.example.springboot.repository.CategoryRepository;
 import com.example.springboot.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,9 @@ import java.util.Optional;
 public class ProductService {
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     public void createProduct(ProductDto productDto, Category category) {
         Product product = new Product();
@@ -70,17 +74,26 @@ public class ProductService {
 
     public void updateProduct(ProductDto productDto, String slug) throws Exception {
         Product existProduct = productRepository.findBySlug(slug);
-        Optional<Product> existProductWithId = productRepository.findById(existProduct.getId());
         if(existProduct == null){
             throw new Exception("Sản phẩm không tồn tại");
         }
-        Product product = existProductWithId.get();
+
+        Integer categoryId = productDto.getCategoryId();
+
+        if(categoryId == null){
+            throw new Exception("Danh Mục Không Tồn Tại");
+        }
+
+        Optional<Category> category = categoryRepository.findById(categoryId);
+        Category existCategory = categoryRepository.findBySlug(category.get().getSlug());
+
+        Product product = existProduct;
         product.setName(productDto.getName());
         product.setPrice(productDto.getPrice());
         product.setImageURL(productDto.getImageURL());
         product.setDescription(productDto.getDescription());
         product.setSlug(productDto.getSlug());
-        product.setCategory(existProductWithId.get().getCategory());
+        product.setCategory(existCategory);
         productRepository.save(product);
     }
 

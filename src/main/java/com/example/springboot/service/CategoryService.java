@@ -1,7 +1,9 @@
 package com.example.springboot.service;
 
 import com.example.springboot.model.Category;
+import com.example.springboot.model.Product;
 import com.example.springboot.repository.CategoryRepository;
+import com.example.springboot.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,9 @@ import java.util.Optional;
 public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     public List<Category> getCategories() {
         return categoryRepository.findAll();
@@ -37,7 +42,7 @@ public class CategoryService {
         return categoryRepository.save(existCategory);
     }
 
-    public String deleteCategory(int id)
+    public String deleteCategory(Integer id)
     {
         categoryRepository.deleteById(id);
         return "Delete Success: category id" + " " + id;

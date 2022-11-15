@@ -20,7 +20,6 @@ import java.util.Optional;
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
-
     @Autowired
     private ProductService productService;
 
@@ -70,7 +69,7 @@ public class CategoryController {
     }
 
     @DeleteMapping(path="/delete/{id}")
-    public @ResponseBody ResponseEntity<ApiResponse> deleteCategory(@PathVariable int id)
+    public @ResponseBody ResponseEntity<ApiResponse> deleteCategory(@PathVariable Integer id)
     {
         Optional<Category> existCategory = Optional.ofNullable(categoryService.findById(id).orElse(null));
         if(existCategory.isEmpty())
@@ -78,6 +77,17 @@ public class CategoryController {
             return new ResponseEntity<>(new ApiResponse(false, "Danh Mục Bạn Xóa Không Tồn Tại"),
                     HttpStatus.NOT_FOUND);
         }
+
+        List<ProductDto> productDtos = productService.getAllProducts();
+        for (ProductDto productDto: productDtos)
+        {
+            if(productDto.getCategoryId() == id)
+            {
+                return new ResponseEntity<>(new ApiResponse(false, "Danh Mục Bạn Xóa Còn Tồn Tại Sản Phẩm"),
+                        HttpStatus.BAD_REQUEST);
+            }
+        }
+
         categoryService.deleteCategory(id);
         return new ResponseEntity<>(new ApiResponse(true, "Xóa Thành Công Danh Mục:" + " " + existCategory.get().getName()),
                 HttpStatus.OK);
