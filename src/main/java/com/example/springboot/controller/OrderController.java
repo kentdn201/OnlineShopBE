@@ -1,10 +1,7 @@
 package com.example.springboot.controller;
 
 import com.example.springboot.common.ApiResponse;
-import com.example.springboot.dto.order.OrderDetailDto;
-import com.example.springboot.dto.order.OrderDto;
-import com.example.springboot.dto.order.OrderShowDto;
-import com.example.springboot.dto.order.ProductOrderDto;
+import com.example.springboot.dto.order.*;
 import com.example.springboot.model.Enum.OrderStatus;
 import com.example.springboot.model.Order;
 import com.example.springboot.model.OrderProduct;
@@ -13,11 +10,8 @@ import com.example.springboot.repository.OrderRepository;
 import com.example.springboot.repository.UserRepository;
 import com.example.springboot.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailSender;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
@@ -68,7 +62,6 @@ public class OrderController {
     {
         return ResponseEntity.ok(orderService.getOrdersDetail(id, userId));
     }
-
 
     @PostMapping("/create/{userId}")
     public ResponseEntity<ApiResponse> create(@PathVariable(name = "userId") Integer userId, @RequestBody OrderDto orderDto) throws MessagingException {
@@ -136,5 +129,12 @@ public class OrderController {
         emailSenderService.sendEmail(emailToOrder, "Bạn Đã Đặt Hàng Thành Công", htmlOrder);
 
         return new ResponseEntity<>(new ApiResponse(true, "Order Thành Công"), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/edit/{id}/{userId}")
+    public ResponseEntity<ApiResponse> updateOrder(@PathVariable(name = "id") Integer id,@PathVariable(name = "userId") Integer userId, @RequestBody OrderStatusDto orderStatusDto)
+    {
+        orderService.updateOrderDto(id, orderStatusDto);
+        return new ResponseEntity<>(new ApiResponse(true, "Cập nhật thành công"), HttpStatus.OK);
     }
 }

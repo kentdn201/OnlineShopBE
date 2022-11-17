@@ -4,4 +4,5 @@ public enum OrderStatus {
     NotDelivery,
     Delivery,
     Done,
+    Cancel
 }

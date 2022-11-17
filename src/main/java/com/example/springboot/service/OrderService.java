@@ -3,6 +3,7 @@ package com.example.springboot.service;
 import com.example.springboot.dto.order.OrderDetailDto;
 import com.example.springboot.dto.order.OrderProductDto;
 import com.example.springboot.dto.order.OrderShowDto;
+import com.example.springboot.dto.order.OrderStatusDto;
 import com.example.springboot.exceptions.CustomException;
 import com.example.springboot.model.Enum.Role;
 import com.example.springboot.model.Order;
@@ -105,6 +106,17 @@ public class OrderService {
     public void updateOrder(Order order)
     {
         orderRepository.save(order);
+    }
+
+    public Optional<Order> findOrderById(Integer id) {
+        return orderRepository.findById(id);
+    }
+
+    public void updateOrderDto(Integer id, OrderStatusDto orderStatusDto)
+    {
+        Order existOrder = orderRepository.findOrderById(id);
+        existOrder.setOrderStatus(orderStatusDto.getOrderStatus());
+        orderRepository.save(existOrder);
     }
 
     public List<OrderShowDto> getAllOrderDto()
