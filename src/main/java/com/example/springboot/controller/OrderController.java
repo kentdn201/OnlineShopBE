@@ -11,15 +11,16 @@ import com.example.springboot.model.OrderProduct;
 import com.example.springboot.model.User;
 import com.example.springboot.repository.OrderRepository;
 import com.example.springboot.repository.UserRepository;
-import com.example.springboot.service.OrderProductService;
-import com.example.springboot.service.OrderService;
-import com.example.springboot.service.ProductService;
-import com.example.springboot.service.UserService;
+import com.example.springboot.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +47,9 @@ public class OrderController {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private EmailSenderService emailSenderService;
+
     @GetMapping("/all")
     public List<OrderShowDto> getAllOrders()
     {
@@ -67,8 +71,7 @@ public class OrderController {
 
 
     @PostMapping("/create/{userId}")
-    public ResponseEntity<ApiResponse> create(@PathVariable(name = "userId") Integer userId, @RequestBody OrderDto orderDto)
-    {
+    public ResponseEntity<ApiResponse> create(@PathVariable(name = "userId") Integer userId, @RequestBody OrderDto orderDto) throws MessagingException {
         List<ProductOrderDto> productOrderDtos = orderDto.getProductOrderDtos();
         Optional<User> findUserById = userRepository.findById(userId);
 
@@ -88,13 +91,49 @@ public class OrderController {
         orderService.createOrder(order);
 
         List<OrderProduct> orderProducts = new ArrayList<>();
+        int total = 0;
         for(ProductOrderDto productOrderDto: productOrderDtos)
         {
+            total += productOrderDto.getQuantity() * productOrderDto.getPrice();
             orderProducts.add(orderProductService.createOrderProduct(new OrderProduct(order, productService.findById(productOrderDto.getId()), productOrderDto.getQuantity(), productOrderDto.getPrice())));
         }
 
         order.setOrderProducts(orderProducts);
         orderService.updateOrder(order);
+
+        String emailToOrder = existUser.getEmail();
+        String fullNameOfOrder = existUser.getFirstName() +" "+ existUser.getLastName();
+
+        String orderToHtml = "";
+
+        for(ProductOrderDto productOrderDto: productOrderDtos)
+        {
+            orderToHtml += "<tr style=\"border:1px solid black\">\n" +
+                    "    <td style=\"border:1px solid black\">"+ productService.getProductDetailDtoById(productOrderDto.getId()).getName() + "</td>\n" +
+                    "    <td style=\"border:1px solid black\">"+ productOrderDto.getQuantity() + "</td>\n" +
+                    "    <td style=\"border:1px solid black\">"+ productOrderDto.getPrice().intValue() +" VNĐ"+ "</td>\n" +
+                    "  </tr>\n";
+        }
+
+        String htmlOrder = "<h3>" + "Cảm ơn " + fullNameOfOrder + " đã mua hàng tại của hàng của chúng tôi" + "<h3>\n" +
+                "<h3>Chúng tôi sẽ liên hệ bạn sớm nhất có thể để xác nhận về đơn hàng</h3>\n" +
+                "<p>Thông tin bạn gửi cho chúng tôi như sau:<p> <br/>\n"
+                + "<b>Số điện thoại: </b>" + order.getPhoneNumber() + "<br/>\n"
+                + "<b>Địa chỉ nhận hàng: </b>" + order.getAddress() + "<br/>\n"
+                + "<b>Ghi chú: </b>" +order.getNote() + "<br/>\n"
+                + "<b>Tổng giá trị đơn hàng: </b>" + total+" VNĐ"+ "<br/>\n"
+                + "<h2>Đơn Hàng: </h2>" + "<br/>\n" +
+                "<table style=\"width:100%; border:1px solid black\">\n" +
+                "  <tr style=\"border:1px solid black\">\n" +
+                "    <th style=\"border:1px solid black\">Tên sản phẩm</th>\n" +
+                "    <th style=\"border:1px solid black\">Số lượng</th>\n" +
+                "    <th style=\"border:1px solid black\">Giá sản phẩm</th>\n" +
+                "  </tr>\n"
+                + orderToHtml +
+                "</table> <br/>\n"
+                + "<h3>Chúc bạn có một ngày tốt lành!</h3>";
+
+        emailSenderService.sendEmail(emailToOrder, "Bạn Đã Đặt Hàng Thành Công", htmlOrder);
 
         return new ResponseEntity<>(new ApiResponse(true, "Order Thành Công"), HttpStatus.CREATED);
     }
