@@ -5,6 +5,7 @@ import com.example.springboot.dto.SignInDto;
 import com.example.springboot.dto.SignupDto;
 import com.example.springboot.exceptions.CustomException;
 import com.example.springboot.model.AuthenticationToken;
+import com.example.springboot.model.Enum.Role;
 import com.example.springboot.model.User;
 import com.example.springboot.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,7 @@ public class UserService {
         user.setFirstName(signupDto.getFirstName());
         user.setLastName(signupDto.getLastName());
         user.setPassword(encryptedPassword);
+        user.setRole(Role.User);
         userRepository.save(user);
 
 //      Create the token
