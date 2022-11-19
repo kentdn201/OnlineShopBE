@@ -3,9 +3,13 @@ package com.example.springboot.service;
 import com.example.springboot.dto.ResponseDto;
 import com.example.springboot.dto.SignInDto;
 import com.example.springboot.dto.SignupDto;
+import com.example.springboot.dto.order.OrderStatusDto;
+import com.example.springboot.dto.user.UserUpdateStatusDto;
 import com.example.springboot.exceptions.CustomException;
 import com.example.springboot.model.AuthenticationToken;
 import com.example.springboot.model.Enum.Role;
+import com.example.springboot.model.Enum.UserStatus;
+import com.example.springboot.model.Order;
 import com.example.springboot.model.User;
 import com.example.springboot.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +19,7 @@ import javax.transaction.Transactional;
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -49,6 +54,7 @@ public class UserService {
         user.setLastName(signupDto.getLastName());
         user.setPassword(encryptedPassword);
         user.setRole(Role.User);
+        user.setUserStatus(UserStatus.None);
         userRepository.save(user);
 
 //      Create the token
@@ -103,4 +109,14 @@ public class UserService {
         return user.get();
     }
 
+    public List<User> getUsers() {
+        return userRepository.findAll();
+    }
+
+    public void updateUserStatus(Integer id, UserUpdateStatusDto userUpdateStatusDto)
+    {
+        User existUser = userRepository.findUserById(id);
+        existUser.setUserStatus(userUpdateStatusDto.getUserStatus());
+        userRepository.save(existUser);
+    }
 }

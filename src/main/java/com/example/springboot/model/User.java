@@ -1,6 +1,7 @@
 package com.example.springboot.model;
 
 import com.example.springboot.model.Enum.Role;
+import com.example.springboot.model.Enum.UserStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,5 +28,5 @@ public class User {
     private String email;
     private String password;
     private Role role;
-
+    private UserStatus userStatus;
 }
