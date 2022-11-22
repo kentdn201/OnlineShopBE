@@ -6,8 +6,8 @@
     <!-- Using socket -->
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
         <property name="host" value="smtp.gmail.com" />
-        <property name="username" value="kentdn200103@gmail.com" />
-        <property name="password" value="flvikykgfkygtplf" />
+        <property name="username" value="your_email_address" />
+        <property name="password" value="your_password" />
         <property name="javaMailProperties">
             <props>
                 <prop key="mail.smtp.auth">true</prop>
@@ -21,8 +21,8 @@
     <!-- Using SMTP -->
     <bean id="mailSender2" class="org.springframework.mail.javamail.JavaMailSenderImpl">
         <property name="host" value="smtp.gmail.com" />
-        <property name="username" value="kentdn200103@gmail.com" />
-        <property name="password" value="flvikykgfkygtplf" />
+        <property name="username" value="your_email_address" />
+        <property name="password" value="your_password" />
         <property name="javaMailProperties">
             <props>
                 <prop key="mail.smtp.auth">true</prop>
