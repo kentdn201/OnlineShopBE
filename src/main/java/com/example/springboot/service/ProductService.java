@@ -7,6 +7,7 @@ import com.example.springboot.model.Category;
 import com.example.springboot.model.Product;
 import com.example.springboot.repository.CategoryRepository;
 import com.example.springboot.repository.ProductRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,8 @@ public class ProductService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    ModelMapper modelMapper = new ModelMapper();
+
     public void createProduct(ProductDto productDto, Category category) {
         Product product = new Product();
         product.setName(productDto.getName());
@@ -33,39 +36,25 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    public ProductDto getProductDto(Product product)
-    {
-        ProductDto productDto = new ProductDto();
-        productDto.setId(product.getId());
-        productDto.setName(product.getName());
-        productDto.setDescription(product.getDescription());
-        productDto.setPrice(product.getPrice());
-        productDto.setImageURL(product.getImageURL());
-        productDto.setSlug(product.getSlug());
-        productDto.setCategoryId(product.getCategory().getId());
-        return  productDto;
+
+    public ProductDto getProductDto(Product product) {
+        //      mapping dto to entity
+        ProductDto productDto1 = modelMapper.map(product, ProductDto.class);
+        return productDto1;
     }
 
-    public ProductDto getProductDtoBySlug(String slug)
-    {
+    public ProductDto getProductDtoBySlug(String slug) {
+        //      mapping dto to entity
         Product product = productRepository.findBySlug(slug);
-        ProductDto productDto = new ProductDto();
-        productDto.setId(product.getId());
-        productDto.setName(product.getName());
-        productDto.setDescription(product.getDescription());
-        productDto.setPrice(product.getPrice());
-        productDto.setImageURL(product.getImageURL());
-        productDto.setSlug(product.getSlug());
-        productDto.setCategoryId(product.getCategory().getId());
-        return  productDto;
+        ProductDto productDto = modelMapper.map(product, ProductDto.class);
+        return productDto;
     }
-
 
     public List<ProductDto> getAllProducts() {
         List<Product> products = productRepository.findAll();
         List<ProductDto> productDtos = new ArrayList<>();
 
-        for (Product product: products) {
+        for (Product product : products) {
             productDtos.add(getProductDto(product));
         }
 
@@ -74,13 +63,13 @@ public class ProductService {
 
     public void updateProduct(ProductDto productDto, String slug) throws Exception {
         Product existProduct = productRepository.findBySlug(slug);
-        if(existProduct == null){
+        if (existProduct == null) {
             throw new Exception("Sản phẩm không tồn tại");
         }
 
         Integer categoryId = productDto.getCategoryId();
 
-        if(categoryId == null){
+        if (categoryId == null) {
             throw new Exception("Danh Mục Không Tồn Tại");
         }
 
@@ -104,7 +93,7 @@ public class ProductService {
 
     public void deleteProduct(String slug) throws Exception {
         Product existProduct = productRepository.findBySlug(slug);
-        if(existProduct == null){
+        if (existProduct == null) {
             throw new Exception("Sản phẩm không tồn tại");
         }
         productRepository.deleteById(existProduct.getId());
@@ -112,34 +101,30 @@ public class ProductService {
 
     public Product findById(Integer productId) {
         Optional<Product> existProduct = productRepository.findById(productId);
-        if(existProduct.isEmpty())
-        {
+        if (existProduct.isEmpty()) {
             throw new CustomException("Sản phẩm có mã là: " + productId + " không tồn tại");
         }
         return existProduct.get();
     }
 
-    public ProductDetailDto getProductDetailDtoById(Integer productId)
-    {
-        Optional<Product> product = productRepository.findById(productId);
-        ProductDetailDto productDetailDto = new ProductDetailDto();
-        productDetailDto.setId(product.get().getId());
-        productDetailDto.setName(product.get().getName());
-        productDetailDto.setImageURL(product.get().getImageURL());
-        productDetailDto.setSlug(product.get().getSlug());
-        return  productDetailDto;
+    public Product findBySlugOrId(String slug, Integer id) {
+        return productRepository.findBySlugOrId(slug, id);
     }
 
-    public List<ProductDto> searchProducts(String keyword)
-    {
+    public ProductDetailDto getProductDetailDtoById(Integer productId) {
+        String slug = "";
+        Product product = productRepository.findBySlugOrId(slug, productId);
+//      mapping dto to entity
+        ProductDetailDto productDetailDto = modelMapper.map(product, ProductDetailDto.class);
+        return productDetailDto;
+    }
+
+    public List<ProductDto> searchProducts(String keyword) {
         List<ProductDto> productDtos = getAllProducts();
         List<ProductDto> newProductDtos = new ArrayList<>();
-        if(keyword != null)
-        {
-            for (ProductDto dto: productDtos)
-            {
-                if(dto.getName().toLowerCase().contains(keyword.toLowerCase()))
-                {
+        if (keyword != null) {
+            for (ProductDto dto : productDtos) {
+                if (dto.getName().toLowerCase().contains(keyword.toLowerCase())) {
                     newProductDtos.add(dto);
                 }
             }
