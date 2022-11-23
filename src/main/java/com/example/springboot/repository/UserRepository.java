@@ -1,4 +1,4 @@
-package com.example.springboot.model.Enum.repository;
+package com.example.springboot.repository;
 
 import com.example.springboot.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;

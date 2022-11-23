@@ -1,7 +1,7 @@
 package com.example.springboot.service;
 
 import com.example.springboot.model.Category;
-import com.example.springboot.model.Enum.repository.CategoryRepository;
+import com.example.springboot.repository.CategoryRepository;
 import com.example.springboot.service.impl.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

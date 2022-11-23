@@ -4,12 +4,12 @@ import com.example.springboot.dto.order.OrderDetailDto;
 import com.example.springboot.dto.order.OrderProductDto;
 import com.example.springboot.dto.order.OrderShowDto;
 import com.example.springboot.dto.order.OrderStatusDto;
-import com.example.springboot.exceptions.CustomException;
+import com.example.springboot.model.exceptions.CustomException;
 import com.example.springboot.model.Enum.Role;
 import com.example.springboot.model.Order;
 import com.example.springboot.model.User;
-import com.example.springboot.model.Enum.repository.OrderRepository;
-import com.example.springboot.model.Enum.repository.UserRepository;
+import com.example.springboot.repository.OrderRepository;
+import com.example.springboot.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

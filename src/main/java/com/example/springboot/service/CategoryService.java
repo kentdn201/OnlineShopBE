@@ -3,14 +3,13 @@ package com.example.springboot.service;
 import com.example.springboot.config.ObjectMapperUtils;
 import com.example.springboot.dto.ProductDto;
 import com.example.springboot.model.Category;
-import com.example.springboot.model.Enum.repository.CategoryRepository;
-import com.example.springboot.model.Enum.repository.ProductRepository;
+import com.example.springboot.repository.CategoryRepository;
+import com.example.springboot.repository.ProductRepository;
 import com.example.springboot.model.Product;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 

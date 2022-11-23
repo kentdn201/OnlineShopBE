@@ -1,4 +1,4 @@
-package com.example.springboot.exceptions;
+package com.example.springboot.model.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -2,7 +2,7 @@ package com.example.springboot.service;
 
 import com.example.springboot.dto.order.OrderProductDto;
 import com.example.springboot.model.OrderProduct;
-import com.example.springboot.model.Enum.repository.OrderProductRepository;
+import com.example.springboot.repository.OrderProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

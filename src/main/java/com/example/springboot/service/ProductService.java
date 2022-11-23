@@ -2,11 +2,11 @@ package com.example.springboot.service;
 
 import com.example.springboot.dto.ProductDto;
 import com.example.springboot.dto.order.ProductDetailDto;
-import com.example.springboot.exceptions.CustomException;
+import com.example.springboot.model.exceptions.CustomException;
 import com.example.springboot.model.Category;
 import com.example.springboot.model.Product;
-import com.example.springboot.model.Enum.repository.CategoryRepository;
-import com.example.springboot.model.Enum.repository.ProductRepository;
+import com.example.springboot.repository.CategoryRepository;
+import com.example.springboot.repository.ProductRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

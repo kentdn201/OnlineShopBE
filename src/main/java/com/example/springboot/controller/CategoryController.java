@@ -3,7 +3,7 @@ package com.example.springboot.controller;
 import com.example.springboot.common.ApiResponse;
 import com.example.springboot.dto.ProductDto;
 import com.example.springboot.model.Category;
-import com.example.springboot.model.Enum.repository.ProductRepository;
+import com.example.springboot.repository.ProductRepository;
 import com.example.springboot.service.CategoryService;
 import com.example.springboot.service.CategoryServiceImpl;
 import com.example.springboot.service.ProductService;
