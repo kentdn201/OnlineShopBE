@@ -27,8 +27,7 @@ public class UserController {
     private AuthenticationSerivce authenticationSerivce;
 
     @GetMapping("/all")
-    public List<User> getAllUsers()
-    {
+    public List<User> getAllUsers() {
         return userService.getUsers();
     }
 
@@ -38,26 +37,22 @@ public class UserController {
     }
 
     @PostMapping("/signin")
-    public ResponseDto signIn(@RequestBody SignInDto signInDto)
-    {
+    public ResponseDto signIn(@RequestBody SignInDto signInDto) {
         return userService.signIn(signInDto);
     }
 
     @GetMapping("/{token}/get")
-    public User getUser(@PathVariable(name = "token") String token)
-    {
+    public User getUser(@PathVariable(name = "token") String token) {
         return authenticationSerivce.getUser(token);
     }
 
     @GetMapping("/{userId}")
-    public User getUserById(@PathVariable(name = "userId") Integer userId)
-    {
+    public User getUserById(@PathVariable(name = "userId") Integer userId) {
         return userService.findByUserId(userId);
     }
 
     @PutMapping("/update/{userId}")
-    public ResponseEntity<ApiResponse> updateUserStatus(@PathVariable(name = "userId") Integer userId, @RequestBody UserUpdateStatusDto userUpdateStatusDto)
-    {
+    public ResponseEntity<ApiResponse> updateUserStatus(@PathVariable(name = "userId") Integer userId, @RequestBody UserUpdateStatusDto userUpdateStatusDto) {
         userService.updateUserStatus(userId, userUpdateStatusDto);
         return new ResponseEntity<>(new ApiResponse(true, "Update Success"), HttpStatus.OK);
     }

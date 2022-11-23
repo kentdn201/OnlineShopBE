@@ -3,6 +3,7 @@ package com.example.springboot.controller;
 import com.example.springboot.common.ApiResponse;
 import com.example.springboot.dto.ProductDto;
 import com.example.springboot.model.Category;
+import com.example.springboot.model.Enum.repository.ProductRepository;
 import com.example.springboot.service.CategoryService;
 import com.example.springboot.service.CategoryServiceImpl;
 import com.example.springboot.service.ProductService;
@@ -11,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +25,9 @@ public class CategoryController {
     private ProductService productService;
     @Autowired
     private CategoryServiceImpl categoryServiceImpl;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @PostMapping(path = "/create")
     public @ResponseBody ResponseEntity<ApiResponse> addNewCategory(@RequestBody Category category) {
@@ -46,8 +49,7 @@ public class CategoryController {
     //   22/11/2022 - lay category theo slug hoac la id
     @GetMapping(path = "/{slug}")
     public @ResponseBody Category getOneCategoryBySlug(@PathVariable String slug) {
-        Integer id = 0;
-        return categoryServiceImpl.findCategoryBySlugOrId(slug, id);
+        return categoryServiceImpl.findCategoryBySlugOrId(slug, 0);
     }
 
     //   22/11/2022 - lay category theo slug hoac la id
@@ -94,25 +96,10 @@ public class CategoryController {
                 HttpStatus.OK);
     }
 
+    //    Use sql query to get all product by category slug
     @GetMapping("{slug}/san-pham")
     public List<ProductDto> getProductsByCategory(@PathVariable(name = "slug") String slug) {
-//      Danh sách hiện tại của sản phẩm
-        List<ProductDto> listProductDto = productService.getAllProducts();
-
-//      Một danh sách mới
-        List<ProductDto> listProduct = new ArrayList<>();
-
-//      Slug của category cần tìm
-        Category existCategory = categoryService.findBySlug(slug);
-
-//      Vòng lặp for tìm các sản phẩm có category_id = với id của danh mục cần tìm rồi thêm vào mảng mới
-        for (ProductDto product : listProductDto) {
-            if (product.getCategoryId() == existCategory.getId()) {
-                listProduct.add(product);
-            }
-        }
-
-        return listProduct;
+        return categoryService.getProductsByCategorySlug(slug);
     }
 
     //  22/11/2022 - tao tren controller thuc hien lay ra category theo slug va id

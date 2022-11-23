@@ -6,8 +6,8 @@ import com.example.springboot.model.Enum.OrderStatus;
 import com.example.springboot.model.Order;
 import com.example.springboot.model.OrderProduct;
 import com.example.springboot.model.User;
-import com.example.springboot.repository.OrderRepository;
-import com.example.springboot.repository.UserRepository;
+import com.example.springboot.model.Enum.repository.OrderRepository;
+import com.example.springboot.model.Enum.repository.UserRepository;
 import com.example.springboot.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,21 +45,18 @@ public class OrderController {
     private EmailSenderService emailSenderService;
 
     @GetMapping("/all")
-    public List<OrderShowDto> getAllOrders()
-    {
+    public List<OrderShowDto> getAllOrders() {
         List<OrderShowDto> orderList = orderService.getAllOrderDto();
         return orderList;
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<OrderShowDto>> getOrderByUserId(@PathVariable(name = "userId") Integer userId)
-    {
+    public ResponseEntity<List<OrderShowDto>> getOrderByUserId(@PathVariable(name = "userId") Integer userId) {
         return ResponseEntity.ok(orderService.getOrdersByUserId(userId));
     }
 
     @GetMapping("/don-hang/{id}/{userId}")
-    public ResponseEntity<OrderDetailDto> getOrderDetail(@PathVariable(name = "id") Integer id, @PathVariable(name = "userId") Integer userId)
-    {
+    public ResponseEntity<OrderDetailDto> getOrderDetail(@PathVariable(name = "id") Integer id, @PathVariable(name = "userId") Integer userId) {
         return ResponseEntity.ok(orderService.getOrdersDetail(id, userId));
     }
 
@@ -68,8 +65,7 @@ public class OrderController {
         List<ProductOrderDto> productOrderDtos = orderDto.getProductOrderDtos();
         Optional<User> findUserById = userRepository.findById(userId);
 
-        if(!findUserById.isPresent())
-        {
+        if (!findUserById.isPresent()) {
             return new ResponseEntity<>(new ApiResponse(false, "Tài Khoản Đã Bị Xóa Hoặc Không Tồn Tại"), HttpStatus.BAD_REQUEST);
         }
         User existUser = userRepository.findByEmail(findUserById.get().getEmail());
@@ -85,8 +81,7 @@ public class OrderController {
 
         List<OrderProduct> orderProducts = new ArrayList<>();
         int total = 0;
-        for(ProductOrderDto productOrderDto: productOrderDtos)
-        {
+        for (ProductOrderDto productOrderDto : productOrderDtos) {
             total += productOrderDto.getQuantity() * productOrderDto.getPrice();
             orderProducts.add(orderProductService.createOrderProduct(new OrderProduct(order, productService.findById(productOrderDto.getId()), productOrderDto.getQuantity(), productOrderDto.getPrice())));
         }
@@ -95,16 +90,15 @@ public class OrderController {
         orderService.updateOrder(order);
 
         String emailToOrder = existUser.getEmail();
-        String fullNameOfOrder = existUser.getFirstName() +" "+ existUser.getLastName();
+        String fullNameOfOrder = existUser.getFirstName() + " " + existUser.getLastName();
 
         String orderToHtml = "";
 
-        for(ProductOrderDto productOrderDto: productOrderDtos)
-        {
+        for (ProductOrderDto productOrderDto : productOrderDtos) {
             orderToHtml += "<tr style=\"border:1px solid black\">\n" +
-                    "    <td style=\"border:1px solid black\">"+ productService.getProductDetailDtoById(productOrderDto.getId()).getName() + "</td>\n" +
-                    "    <td style=\"border:1px solid black\">"+ productOrderDto.getQuantity() + "</td>\n" +
-                    "    <td style=\"border:1px solid black\">"+ productOrderDto.getPrice().intValue() +" VNĐ"+ "</td>\n" +
+                    "    <td style=\"border:1px solid black\">" + productService.getProductDetailDtoById(productOrderDto.getId()).getName() + "</td>\n" +
+                    "    <td style=\"border:1px solid black\">" + productOrderDto.getQuantity() + "</td>\n" +
+                    "    <td style=\"border:1px solid black\">" + productOrderDto.getPrice().intValue() + " VNĐ" + "</td>\n" +
                     "  </tr>\n";
         }
 
@@ -113,8 +107,8 @@ public class OrderController {
                 "<p>Thông tin bạn gửi cho chúng tôi như sau:<p> <br/>\n"
                 + "<b>Số điện thoại: </b>" + order.getPhoneNumber() + "<br/>\n"
                 + "<b>Địa chỉ nhận hàng: </b>" + order.getAddress() + "<br/>\n"
-                + "<b>Ghi chú: </b>" +order.getNote() + "<br/>\n"
-                + "<b>Tổng giá trị đơn hàng: </b>" + total+" VNĐ"+ "<br/>\n"
+                + "<b>Ghi chú: </b>" + order.getNote() + "<br/>\n"
+                + "<b>Tổng giá trị đơn hàng: </b>" + total + " VNĐ" + "<br/>\n"
                 + "<h2>Đơn Hàng: </h2>" + "<br/>\n" +
                 "<table style=\"width:100%; border:1px solid black\">\n" +
                 "  <tr style=\"border:1px solid black\">\n" +
@@ -132,8 +126,7 @@ public class OrderController {
     }
 
     @PutMapping("/edit/{id}/{userId}")
-    public ResponseEntity<ApiResponse> updateOrder(@PathVariable(name = "id") Integer id,@PathVariable(name = "userId") Integer userId, @RequestBody OrderStatusDto orderStatusDto)
-    {
+    public ResponseEntity<ApiResponse> updateOrder(@PathVariable(name = "id") Integer id, @PathVariable(name = "userId") Integer userId, @RequestBody OrderStatusDto orderStatusDto) {
         orderService.updateOrderDto(id, orderStatusDto);
         return new ResponseEntity<>(new ApiResponse(true, "Cập nhật thành công"), HttpStatus.OK);
     }

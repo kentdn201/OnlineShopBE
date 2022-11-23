@@ -1,4 +1,4 @@
-package com.example.springboot.repository;
+package com.example.springboot.model.Enum.repository;
 
 import com.example.springboot.model.Order;
 import com.example.springboot.model.User;

@@ -8,8 +8,8 @@ import com.example.springboot.exceptions.CustomException;
 import com.example.springboot.model.Enum.Role;
 import com.example.springboot.model.Order;
 import com.example.springboot.model.User;
-import com.example.springboot.repository.OrderRepository;
-import com.example.springboot.repository.UserRepository;
+import com.example.springboot.model.Enum.repository.OrderRepository;
+import com.example.springboot.model.Enum.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,28 +26,23 @@ public class OrderService {
     @Autowired
     private OrderProductService orderProductService;
 
-    public List<Order> getAllOrders()
-    {
+    public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
 
-    public List<OrderShowDto> getOrdersByUserId(Integer userId)
-    {
+    public List<OrderShowDto> getOrdersByUserId(Integer userId) {
         List<OrderShowDto> orderShowDtos = getAllOrderDto();
         List<OrderShowDto> newOrderShowDtos = new ArrayList<>();
 
-        for (OrderShowDto dto: orderShowDtos)
-        {
-            if(dto.getUserId() == userId)
-            {
+        for (OrderShowDto dto : orderShowDtos) {
+            if (dto.getUserId() == userId) {
                 newOrderShowDtos.add(dto);
             }
         }
         return newOrderShowDtos;
     }
 
-    public OrderDetailDto getOrdersDetail(Integer id, Integer userId)
-    {
+    public OrderDetailDto getOrdersDetail(Integer id, Integer userId) {
 //      Lấy ra đơn hàng cần tìm
         Optional<Order> orderDetail = orderRepository.findById(id);
 
@@ -59,18 +54,14 @@ public class OrderService {
         OrderDetailDto orderDetailDto = new OrderDetailDto();
 
 //      Check xem order muốn tìm có tồn tại hay không
-        if(!orderDetail.isPresent())
-        {
+        if (!orderDetail.isPresent()) {
             throw new CustomException("Đơn hàng với mã: " + id + " không tồn tại");
         }
 
 //      Check user còn tồn tại hay không và là user thì không được truy cập đến các order khác
-        if(existUser.isPresent())
-        {
-            if(existUser.get().getRole() == Role.User)
-            {
-                if(orderDetail.get().getUser().getId() != userId)
-                {
+        if (existUser.isPresent()) {
+            if (existUser.get().getRole() == Role.User) {
+                if (orderDetail.get().getUser().getId() != userId) {
                     throw new CustomException("Bạn không có quyền truy cập vào " + id);
                 }
             }
@@ -86,10 +77,8 @@ public class OrderService {
         orderDetailDto.setTypePayment(orderDetail.get().getTypePayment());
         orderDetailDto.setNote(orderDetail.get().getNote());
         orderDetailDto.setPhoneNumber(orderDetail.get().getPhoneNumber());
-        for (OrderProductDto dto: orderProductsDtos)
-        {
-            if(orderDetailDto.getId() == dto.getOrderId())
-            {
+        for (OrderProductDto dto : orderProductsDtos) {
+            if (orderDetailDto.getId() == dto.getOrderId()) {
                 newOrderProductsDto.add(dto);
             }
         }
@@ -97,14 +86,12 @@ public class OrderService {
         return orderDetailDto;
     }
 
-    public Order createOrder(Order order)
-    {
+    public Order createOrder(Order order) {
         order.setCreatedDate(new Date());
         return orderRepository.save(order);
     }
 
-    public void updateOrder(Order order)
-    {
+    public void updateOrder(Order order) {
         orderRepository.save(order);
     }
 
@@ -112,28 +99,24 @@ public class OrderService {
         return orderRepository.findById(id);
     }
 
-    public void updateOrderDto(Integer id, OrderStatusDto orderStatusDto)
-    {
+    public void updateOrderDto(Integer id, OrderStatusDto orderStatusDto) {
         Order existOrder = orderRepository.findOrderById(id);
         existOrder.setOrderStatus(orderStatusDto.getOrderStatus());
         orderRepository.save(existOrder);
     }
 
-    public List<OrderShowDto> getAllOrderDto()
-    {
+    public List<OrderShowDto> getAllOrderDto() {
         List<Order> orderList = orderRepository.findAll();
         List<OrderShowDto> orderShowDtos = new ArrayList<>();
 
-        for (Order order: orderList)
-        {
+        for (Order order : orderList) {
             orderShowDtos.add(getOrderDto(order));
         }
 
         return orderShowDtos;
     }
 
-    public OrderShowDto getOrderDto(Order order)
-    {
+    public OrderShowDto getOrderDto(Order order) {
         OrderShowDto orderShowDto = new OrderShowDto();
         orderShowDto.setId(order.getId());
         orderShowDto.setCreateDate(order.getCreatedDate());

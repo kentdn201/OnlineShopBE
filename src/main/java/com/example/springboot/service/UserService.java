@@ -3,15 +3,13 @@ package com.example.springboot.service;
 import com.example.springboot.dto.ResponseDto;
 import com.example.springboot.dto.SignInDto;
 import com.example.springboot.dto.SignupDto;
-import com.example.springboot.dto.order.OrderStatusDto;
 import com.example.springboot.dto.user.UserUpdateStatusDto;
 import com.example.springboot.exceptions.CustomException;
 import com.example.springboot.model.AuthenticationToken;
 import com.example.springboot.model.Enum.Role;
 import com.example.springboot.model.Enum.UserStatus;
-import com.example.springboot.model.Order;
 import com.example.springboot.model.User;
-import com.example.springboot.repository.UserRepository;
+import com.example.springboot.model.Enum.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,14 +26,13 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private AuthenticationSerivce authenticationSerivce;
 
     @Transactional
     public ResponseDto signUp(SignupDto signupDto) {
 //       Check if user present
-        if(userRepository.findByEmail(signupDto.getEmail()) != null){
+        if (userRepository.findByEmail(signupDto.getEmail()) != null) {
             throw new CustomException("Tài khoản đã tồn tại");
         }
 
@@ -76,13 +73,12 @@ public class UserService {
     public ResponseDto signIn(SignInDto signInDto) {
 //        find user by email
         User user = userRepository.findByEmail(signInDto.getEmail());
-        if(Objects.isNull(user))
-        {
+        if (Objects.isNull(user)) {
             throw new CustomException("Tài khoản không có trong hệ thống");
         }
 //        hash the password
         try {
-            if(!user.getPassword().equals(hashPassword(signInDto.getPassword()))) {
+            if (!user.getPassword().equals(hashPassword(signInDto.getPassword()))) {
                 throw new CustomException("Sai tài khoản hoặc mật khẩu");
             }
         } catch (NoSuchAlgorithmException e) {
@@ -90,8 +86,7 @@ public class UserService {
         }
 
         AuthenticationToken token = authenticationSerivce.getToken(user);
-        if(Objects.isNull(token))
-        {
+        if (Objects.isNull(token)) {
             throw new CustomException("Token không tồn tại!");
         }
 
@@ -99,11 +94,9 @@ public class UserService {
 
     }
 
-    public User findByUserId(Integer id)
-    {
+    public User findByUserId(Integer id) {
         Optional<User> user = userRepository.findById(id);
-        if(!user.isPresent())
-        {
+        if (!user.isPresent()) {
             throw new CustomException("Người dùng với mã: " + id + " không tồn tại");
         }
         return user.get();
@@ -113,8 +106,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public void updateUserStatus(Integer id, UserUpdateStatusDto userUpdateStatusDto)
-    {
+    public void updateUserStatus(Integer id, UserUpdateStatusDto userUpdateStatusDto) {
         User existUser = userRepository.findUserById(id);
         existUser.setUserStatus(userUpdateStatusDto.getUserStatus());
         userRepository.save(existUser);
