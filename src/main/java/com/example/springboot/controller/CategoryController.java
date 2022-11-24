@@ -75,10 +75,15 @@ public class CategoryController {
                 HttpStatus.OK);
     }
 
+//  Update deleteCategory using sql query
     @DeleteMapping(path = "/delete/{id}")
-    public String deleteCategory(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse> deleteCategory(@PathVariable Integer id) {
         String deleteCategoryById = categoryService.deleteCategory(id);
-        return "Delete Success";
+        if(deleteCategoryById == "This category still exists products or has been deleted")
+        {
+            return new ResponseEntity<>(new ApiResponse(false, deleteCategoryById), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(new ApiResponse(true, deleteCategoryById), HttpStatus.OK);
     }
 
     //    Use sql query to get all product by category slug

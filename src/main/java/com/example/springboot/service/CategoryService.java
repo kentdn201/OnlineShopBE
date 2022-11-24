@@ -47,10 +47,14 @@ public class CategoryService {
         return categoryRepository.save(existCategory);
     }
 
+//  update deleteCategory
     public String deleteCategory(Integer id) {
-        categoryRepository.deleteCategoryById(id);
-
-        return "Delete Success: category id" + " " + id;
+        try {
+            categoryRepository.deleteById(id);
+            return "Delete category with id: " + id + " successfully";
+        } catch (Exception e) {
+            return "This category still exists products or has been deleted";
+        }
     }
 
     public List<ProductDto> getProductsByCategorySlug(String slug) {

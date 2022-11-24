@@ -62,13 +62,11 @@ public class OrderController {
 
     @PostMapping("/create/{userId}")
     public ResponseEntity<ApiResponse> create(@PathVariable(name = "userId") Integer userId, @RequestBody OrderDto orderDto) throws MessagingException {
-        List<ProductOrderDto> productOrderDtos = orderDto.getProductOrderDtos();
-        Optional<User> findUserById = userRepository.findById(userId);
-
-        if (!findUserById.isPresent()) {
-            return new ResponseEntity<>(new ApiResponse(false, "Tài Khoản Đã Bị Xóa Hoặc Không Tồn Tại"), HttpStatus.BAD_REQUEST);
+        User existUser = userRepository.findByEmail(userRepository.findById(userId).get().getEmail());
+        if (existUser == null) {
+            return new ResponseEntity<>(new ApiResponse(false, "Your account is not available"), HttpStatus.BAD_REQUEST);
         }
-        User existUser = userRepository.findByEmail(findUserById.get().getEmail());
+        
         Order order = new Order();
         order.setUser(existUser);
         order.setOrderStatus(OrderStatus.NotDelivery);
@@ -79,30 +77,34 @@ public class OrderController {
 
         orderService.createOrder(order);
 
-        List<OrderProduct> orderProducts = new ArrayList<>();
         int total = 0;
+        String orderToHtml = "";
+        List<OrderProduct> orderProducts = new ArrayList<>();
+        List<ProductOrderDto> productOrderDtos = orderDto.getProductOrderDtos();
+
         for (ProductOrderDto productOrderDto : productOrderDtos) {
             total += productOrderDto.getQuantity() * productOrderDto.getPrice();
-            orderProducts.add(orderProductService.createOrderProduct(new OrderProduct(order, productService.findById(productOrderDto.getId()), productOrderDto.getQuantity(), productOrderDto.getPrice())));
-        }
 
-        order.setOrderProducts(orderProducts);
-        orderService.updateOrder(order);
-
-        String emailToOrder = existUser.getEmail();
-        String fullNameOfOrder = existUser.getFirstName() + " " + existUser.getLastName();
-
-        String orderToHtml = "";
-
-        for (ProductOrderDto productOrderDto : productOrderDtos) {
             orderToHtml += "<tr style=\"border:1px solid black\">\n" +
                     "    <td style=\"border:1px solid black\">" + productService.getProductDetailDtoById(productOrderDto.getId()).getName() + "</td>\n" +
                     "    <td style=\"border:1px solid black\">" + productOrderDto.getQuantity() + "</td>\n" +
                     "    <td style=\"border:1px solid black\">" + productOrderDto.getPrice().intValue() + " VNĐ" + "</td>\n" +
                     "  </tr>\n";
+
+            orderProducts.add
+                    (orderProductService.createOrderProduct(
+                            new OrderProduct(
+                                    order,
+                                    productService.findById(productOrderDto.getId()),
+                                    productOrderDto.getQuantity(),
+                                    productOrderDto.getPrice()))
+                    );
         }
 
-        String htmlOrder = "<h3>" + "Cảm ơn " + fullNameOfOrder + " đã mua hàng tại của hàng của chúng tôi" + "<h3>\n" +
+        order.setOrderProducts(orderProducts);
+        orderService.updateOrder(order);
+
+        String htmlOrder = "<h3>" + "Cảm ơn " + existUser.getFirstName() + " " + existUser.getLastName() + " đã mua hàng tại của hàng của chúng tôi" + "<h3>\n" +
                 "<h3>Chúng tôi sẽ liên hệ bạn sớm nhất có thể để xác nhận về đơn hàng</h3>\n" +
                 "<p>Thông tin bạn gửi cho chúng tôi như sau:<p> <br/>\n"
                 + "<b>Số điện thoại: </b>" + order.getPhoneNumber() + "<br/>\n"
@@ -120,7 +122,7 @@ public class OrderController {
                 "</table> <br/>\n"
                 + "<h3>Chúc bạn có một ngày tốt lành!</h3>";
 
-        emailSenderService.sendEmail(emailToOrder, "Bạn Đã Đặt Hàng Thành Công", htmlOrder);
+        emailSenderService.sendEmail(existUser.getEmail(), "Bạn Đã Đặt Hàng Thành Công", htmlOrder);
 
         return new ResponseEntity<>(new ApiResponse(true, "Order Thành Công"), HttpStatus.CREATED);
     }
