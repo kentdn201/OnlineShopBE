@@ -15,4 +15,10 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
 
     Category findBySlugAndId(String slug, Integer id);
     Category findBySlugOrId(String slug, Integer id);
+
+    @Query(
+            value = "DELETE FROM category c WHERE c.id IN (SELECT category_id FROM products p where p.category_id = ?1) OR c.id = ?1",
+            nativeQuery = true)
+    void deleteCategoryById(Integer id);
+
 }

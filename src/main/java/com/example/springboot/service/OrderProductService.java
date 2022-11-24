@@ -1,5 +1,6 @@
 package com.example.springboot.service;
 
+import com.example.springboot.config.ObjectMapperUtils;
 import com.example.springboot.dto.order.OrderProductDto;
 import com.example.springboot.model.OrderProduct;
 import com.example.springboot.repository.OrderProductRepository;
@@ -20,20 +21,12 @@ public class OrderProductService {
 
     public List<OrderProductDto> getAllOrderProductsDtos() {
         List<OrderProduct> orderProducts = orderProductRepository.findAll();
-        List<OrderProductDto> orderProductDtos = new ArrayList<>();
-
-        for (OrderProduct orderProduct : orderProducts) {
-            orderProductDtos.add(getProductOrderDto(orderProduct));
-        }
+        List<OrderProductDto> orderProductDtos = ObjectMapperUtils.mapAll(orderProducts, OrderProductDto.class);
         return orderProductDtos;
     }
 
     public OrderProductDto getProductOrderDto(OrderProduct orderProduct) {
-        OrderProductDto productOrderDto = new OrderProductDto();
-        productOrderDto.setOrderId(orderProduct.getOrder().getId());
-        productOrderDto.setProductId(orderProduct.getProduct().getId());
-        productOrderDto.setQuantity(orderProduct.getQuantity());
-        productOrderDto.setPrice(orderProduct.getPrice());
+        OrderProductDto productOrderDto = ObjectMapperUtils.map(orderProduct, OrderProductDto.class);
         return productOrderDto;
     }
 }

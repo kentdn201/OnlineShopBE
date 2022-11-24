@@ -48,7 +48,8 @@ public class CategoryService {
     }
 
     public String deleteCategory(Integer id) {
-        categoryRepository.deleteById(id);
+        categoryRepository.deleteCategoryById(id);
+
         return "Delete Success: category id" + " " + id;
     }
 

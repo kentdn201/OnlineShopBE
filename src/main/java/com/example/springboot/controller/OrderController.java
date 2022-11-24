@@ -55,9 +55,9 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrdersByUserId(userId));
     }
 
-    @GetMapping("/don-hang/{id}/{userId}")
-    public ResponseEntity<OrderDetailDto> getOrderDetail(@PathVariable(name = "id") Integer id, @PathVariable(name = "userId") Integer userId) {
-        return ResponseEntity.ok(orderService.getOrdersDetail(id, userId));
+    @GetMapping("/don-hang/{id}")
+    public ResponseEntity<OrderDetailDto> getOrderDetail(@PathVariable(name = "id") Integer id) {
+        return ResponseEntity.ok(orderService.getOrdersDetail(id));
     }
 
     @PostMapping("/create/{userId}")

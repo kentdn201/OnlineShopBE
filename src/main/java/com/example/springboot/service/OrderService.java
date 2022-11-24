@@ -34,30 +34,27 @@ public class OrderService {
         return orderRepository.findAll();
     }
 
+//  Mapping Dto to Entity
     public List<OrderShowDto> getOrdersByUserId(Integer userId) {
-        List<OrderShowDto> orderShowDtos = getAllOrderDto();
-        List<OrderShowDto> newOrderShowDtos = new ArrayList<>();
+        List<Order> orderListByUser = orderRepository.findByUserId(userId);
+        List<OrderShowDto> orderShowDtos = ObjectMapperUtils.mapAll(orderListByUser, OrderShowDto.class);
 
-        for (OrderShowDto dto : orderShowDtos) {
-            if (dto.getUserId() == userId) {
-                newOrderShowDtos.add(dto);
-            }
-        }
-        return newOrderShowDtos;
+        return orderShowDtos;
     }
 
-//  Update getOrdersDetail
+    //  Update getOrdersDetail
     public OrderDetailDto getOrdersDetail(Integer id) {
         Order orderDetail = orderRepository.findOrderById(id);
         if (orderDetail == null) {
-            throw new CustomException("Đơn hàng với mã: " + id + " không tồn tại");
+            throw new CustomException("Order: " + id + " is not available");
         }
         OrderDetailDto orderDetailDto = ObjectMapperUtils.map(orderDetail, OrderDetailDto.class);
-        List<OrderProductDto> newOrderProductsDto = ObjectMapperUtils.mapAll(orderDetail.getOrderProducts(), OrderProductDto.class);
+        List<OrderProductDto> orderProductDtos = ObjectMapperUtils.mapAll(orderDetail.getOrderProducts(), OrderProductDto.class);
 
+//      Luc mapping bi null len phai map theo cach cu~
         orderDetailDto.setCreateDate(orderDetail.getCreatedDate());
         orderDetailDto.setUserId(orderDetail.getUser().getId());
-        orderDetailDto.setOrderProductDtos(newOrderProductsDto);
+        orderDetailDto.setOrderProductDtos(orderProductDtos);
         return orderDetailDto;
     }
 
@@ -80,27 +77,17 @@ public class OrderService {
         orderRepository.save(existOrder);
     }
 
+    //  Mapping Dto to Entity
     public List<OrderShowDto> getAllOrderDto() {
         List<Order> orderList = orderRepository.findAll();
-        List<OrderShowDto> orderShowDtos = new ArrayList<>();
-
-        for (Order order : orderList) {
-            orderShowDtos.add(getOrderDto(order));
-        }
+        List<OrderShowDto> orderShowDtos = ObjectMapperUtils.mapAll(orderList, OrderShowDto.class);
 
         return orderShowDtos;
     }
 
+    //  Mapping Dto to Entity
     public OrderShowDto getOrderDto(Order order) {
-        OrderShowDto orderShowDto = new OrderShowDto();
-        orderShowDto.setId(order.getId());
-        orderShowDto.setCreateDate(order.getCreatedDate());
-        orderShowDto.setUserId(order.getUser().getId());
-        orderShowDto.setOrderStatus(order.getOrderStatus());
-        orderShowDto.setAddress(order.getAddress());
-        orderShowDto.setTypePayment(order.getTypePayment());
-        orderShowDto.setNote(order.getNote());
-        orderShowDto.setPhoneNumber(order.getPhoneNumber());
+        OrderShowDto orderShowDto = ObjectMapperUtils.map(order, OrderShowDto.class);
         return orderShowDto;
     }
 }
