@@ -9,10 +9,6 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties
 @AllArgsConstructor
 @NoArgsConstructor
-public class SignupDto {
-    private String firstName;
-    private String lastName;
-    private String username;
-    private String email;
-    private String password;
+public class TokenDto {
+    private String token;
 }

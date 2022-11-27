@@ -13,7 +13,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @CrossOrigin(origins = "http://localhost:3000/")
 @RestController
@@ -56,4 +60,15 @@ public class UserController {
         userService.updateUserStatus(userId, userUpdateStatusDto);
         return new ResponseEntity<>(new ApiResponse(true, "Update Success"), HttpStatus.OK);
     }
+
+    @PostMapping("/login")
+    public void login(@RequestBody SignupDto signupDto) {
+        userService.loadUserByUsername(signupDto.getUsername());
+    }
+
+    //    @GetMapping()
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        String authorizationHeader = request.getHeader(AUTHORIZATION);
+    }
 }
+
