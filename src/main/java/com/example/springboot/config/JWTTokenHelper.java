@@ -40,7 +40,6 @@ public class JWTTokenHelper {
         return claims;
     }
 
-
     public String getUsernameFromToken(String token) {
         String username;
         try {

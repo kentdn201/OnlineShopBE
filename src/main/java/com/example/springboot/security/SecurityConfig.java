@@ -56,8 +56,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        http.authorizeRequests().anyRequest().authenticated();
-
         http
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -67,17 +65,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests(
                         (request) -> request
-                                .antMatchers("/api/v1/auth/login")
+                                .antMatchers(
+                                        "/api/v1/auth/login/**",
+                                        "/product/all/**",
+                                        "/product/{slug}/**",
+                                        "/category/all/**",
+                                        "/category/{slug}/**")
                                 .permitAll()
-                                .antMatchers(HttpMethod.OPTIONS, "/**")
-                                .permitAll()
+                                .antMatchers(GET, "/api/v1/auth/userinfo/**", "/order/{userId}/**", "/order/don-hang/{id}/**")
+                                .hasAnyAuthority("USER")
+                                .antMatchers(POST, "/order/create/{userId}")
+                                .hasAnyAuthority("USER")
+                                .antMatchers("/**")
+                                .hasAnyAuthority("ADMIN")
                                 .anyRequest()
                                 .authenticated()
                 )
                 .addFilterBefore(new JWTAuthenticationFilter(userService, jwtTokenHelper), UsernamePasswordAuthenticationFilter.class);
 
-        http.cors();
-        http.csrf().disable().headers().frameOptions().disable();
+        http.csrf().disable().cors().and().headers().frameOptions().disable();
     }
 
     @Override
