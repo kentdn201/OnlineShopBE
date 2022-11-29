@@ -21,14 +21,17 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(unique = true)
     private @NotNull String name;
     private @NotNull String imageURL;
     private @NotNull double price;
     private @NotNull String description;
+
+    @Column(unique = true)
     private @NotNull String slug;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
-    private Category category;
+    private @NotNull Category category;
 
 }

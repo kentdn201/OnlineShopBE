@@ -35,18 +35,11 @@ public class ProductController {
 
     @PostMapping(path = "/add")
     public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto productDto) {
-        Optional<Category> optionalCategory = categoryRepository.findById(productDto.getCategoryId());
-        Optional<Product> existProductSlug = Optional.ofNullable(productService.getProductBySlug(productDto.getSlug()));
-        if (!optionalCategory.isPresent()) {
-            return new ResponseEntity<>(new ApiResponse(false, "Danh Mục Này Đã Không Còn Trong Hệ Thống"), HttpStatus.BAD_REQUEST);
+        String createMessage = productService.createProduct(productDto, categoryRepository.findBySlugOrId("", productDto.getCategoryId()));
+        if (createMessage == "This product slug is available in website, please use other slug") {
+            return new ResponseEntity<>(new ApiResponse(false, createMessage), HttpStatus.CREATED);
         }
-        if (existProductSlug.isPresent()) {
-            return new ResponseEntity<>(new ApiResponse(false, "Slug này đã tồn tại trong hệ thống"), HttpStatus.BAD_REQUEST);
-        }
-
-
-        productService.createProduct(productDto, optionalCategory.get());
-        return new ResponseEntity<>(new ApiResponse(true, "Thêm Thành Công"), HttpStatus.CREATED);
+        return new ResponseEntity<>(new ApiResponse(true, createMessage), HttpStatus.CREATED);
     }
 
     @GetMapping(path = "/all")
@@ -55,7 +48,7 @@ public class ProductController {
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-    //   Update 1 sản phẩm bằng slug
+    //   Update a product using slug
     @PutMapping(path = "/update/{slug}")
     public ResponseEntity<ApiResponse> updateProduct(@PathVariable(name = "slug") String slug, @RequestBody ProductDto productDto) throws Exception {
         Optional<Category> optionalCategory = categoryRepository.findById(productDto.getCategoryId());
@@ -66,7 +59,7 @@ public class ProductController {
         return new ResponseEntity<>(new ApiResponse(true, "success"), HttpStatus.OK);
     }
 
-    //   Lấy ra 1 sản phẩm bằng slug
+    //   get a product using slug of product
     @GetMapping(path = "/{slug}")
     public ResponseEntity<ProductDto> getProduct(@PathVariable(name = "slug") String slug) {
         ProductDto productDto = productService.getProductDtoBySlug(slug);

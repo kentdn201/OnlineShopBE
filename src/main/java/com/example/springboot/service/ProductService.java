@@ -25,15 +25,20 @@ public class ProductService {
 
     ModelMapper modelMapper = new ModelMapper();
 
-    public void createProduct(ProductDto productDto, Category category) {
-        Product product = new Product();
-        product.setName(productDto.getName());
-        product.setPrice(productDto.getPrice());
-        product.setImageURL(productDto.getImageURL());
-        product.setDescription(productDto.getDescription());
-        product.setSlug(productDto.getSlug());
-        product.setCategory(category);
-        productRepository.save(product);
+    public String createProduct(ProductDto productDto, Category category) {
+        try {
+            Product product = new Product();
+            product.setName(productDto.getName());
+            product.setPrice(productDto.getPrice());
+            product.setImageURL(productDto.getImageURL());
+            product.setDescription(productDto.getDescription());
+            product.setSlug(productDto.getSlug());
+            product.setCategory(category);
+            productRepository.save(product);
+            return "Create Success";
+        } catch (Exception e) {
+            return "This slug is available or category is not available";
+        }
     }
 
 

@@ -2,22 +2,16 @@ package com.example.springboot.controller;
 
 import com.example.springboot.common.ApiResponse;
 import com.example.springboot.dto.ResponseDto;
-import com.example.springboot.dto.SignInDto;
 import com.example.springboot.dto.SignupDto;
 import com.example.springboot.dto.user.UserUpdateStatusDto;
 import com.example.springboot.model.User;
-import com.example.springboot.service.AuthenticationSerivce;
 import com.example.springboot.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @CrossOrigin(origins = "http://localhost:3000/")
 @RestController
@@ -26,9 +20,6 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private AuthenticationSerivce authenticationSerivce;
 
     @GetMapping("/all")
     public List<User> getAllUsers() {
@@ -40,16 +31,6 @@ public class UserController {
         return userService.signUp(signupDto);
     }
 
-    @PostMapping("/signin")
-    public ResponseDto signIn(@RequestBody SignInDto signInDto) {
-        return userService.signIn(signInDto);
-    }
-
-    @GetMapping("/{token}/get")
-    public User getUser(@PathVariable(name = "token") String token) {
-        return authenticationSerivce.getUser(token);
-    }
-
     @GetMapping("/{userId}")
     public User getUserById(@PathVariable(name = "userId") Integer userId) {
         return userService.findByUserId(userId);
@@ -59,16 +40,6 @@ public class UserController {
     public ResponseEntity<ApiResponse> updateUserStatus(@PathVariable(name = "userId") Integer userId, @RequestBody UserUpdateStatusDto userUpdateStatusDto) {
         userService.updateUserStatus(userId, userUpdateStatusDto);
         return new ResponseEntity<>(new ApiResponse(true, "Update Success"), HttpStatus.OK);
-    }
-
-    @PostMapping("/login")
-    public void login(@RequestBody SignupDto signupDto) {
-        userService.loadUserByUsername(signupDto.getUsername());
-    }
-
-    //    @GetMapping()
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        String authorizationHeader = request.getHeader(AUTHORIZATION);
     }
 }
 

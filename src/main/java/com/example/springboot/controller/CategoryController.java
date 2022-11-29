@@ -31,8 +31,8 @@ public class CategoryController {
 
     @PostMapping(path = "/create")
     public @ResponseBody ResponseEntity<ApiResponse> addNewCategory(@RequestBody Category category) {
-        Optional<Category> existCategory = Optional.ofNullable(categoryService.findBySlug(category.getSlug()));
-        if (existCategory.isPresent()) {
+        Category existCategory = categoryService.findBySlug(category.getSlug());
+        if (existCategory != null) {
             return new ResponseEntity<>(new ApiResponse(false, "Slug của danh mục đã tồn tại"),
                     HttpStatus.BAD_REQUEST);
         }
@@ -55,8 +55,7 @@ public class CategoryController {
     //   22/11/2022 - lay category theo slug hoac la id
     @GetMapping(path = "/get/{id}")
     public @ResponseBody Category getOneCategoryBySlug(@PathVariable Integer id) {
-        String slug = "";
-        return categoryServiceImpl.findCategoryBySlugOrId(slug, id);
+        return categoryServiceImpl.findCategoryBySlugOrId("", id);
     }
 
     @GetMapping(path = "/danh-muc/{id}")
