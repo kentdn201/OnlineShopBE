@@ -37,7 +37,7 @@ public class ProductController {
     public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto productDto) {
         String createMessage = productService.createProduct(productDto, categoryRepository.findBySlugOrId("", productDto.getCategoryId()));
         if (createMessage == "This product slug is available in website, please use other slug") {
-            return new ResponseEntity<>(new ApiResponse(false, createMessage), HttpStatus.CREATED);
+            return new ResponseEntity<>(new ApiResponse(false, createMessage), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(new ApiResponse(true, createMessage), HttpStatus.CREATED);
     }
@@ -82,19 +82,13 @@ public class ProductController {
 
     @DeleteMapping(path = "/delete/{slug}")
     public ResponseEntity<ApiResponse> deleteProduct(@PathVariable(name = "slug") String slug) throws Exception {
-        Product existProduct = productService.getProductBySlug(slug);
-        if (existProduct == null) {
-            return new ResponseEntity<>(new ApiResponse(false, "Không Tìm Thấy Sản Phảm Mà Bạn Muốn Xóa"), HttpStatus.NOT_FOUND);
+        String deleteMsg = productService.deleteProduct(slug);
+        if (deleteMsg == "This product is not available to delete") {
+            return new ResponseEntity<>(new ApiResponse(false, deleteMsg), HttpStatus.NOT_FOUND);
+        } else if (deleteMsg == "Can not delete this product has been ordered") {
+            return new ResponseEntity<>(new ApiResponse(false, deleteMsg), HttpStatus.BAD_REQUEST);
         }
-
-        List<OrderProduct> orderProducts = orderProductRepository.findAll();
-        for (OrderProduct orderProduct : orderProducts) {
-            if (orderProduct.getProduct().getId() == existProduct.getId()) {
-                return new ResponseEntity<>(new ApiResponse(false, "Không Thể Xóa Sản Phẩm Đang Được Đặt Hàng"), HttpStatus.BAD_REQUEST);
-            }
-        }
-        productService.deleteProduct(slug);
-        return new ResponseEntity<>(new ApiResponse(true, "Xóa Thành Công Sản Phẩm: " + existProduct.getName()), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse(true, deleteMsg), HttpStatus.OK);
     }
 
     @GetMapping(path = "/search")

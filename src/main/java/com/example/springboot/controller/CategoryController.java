@@ -33,11 +33,11 @@ public class CategoryController {
     public @ResponseBody ResponseEntity<ApiResponse> addNewCategory(@RequestBody Category category) {
         Category existCategory = categoryService.findBySlug(category.getSlug());
         if (existCategory != null) {
-            return new ResponseEntity<>(new ApiResponse(false, "Slug của danh mục đã tồn tại"),
+            return new ResponseEntity<>(new ApiResponse(false, "You can not add a new category with same slug in data"),
                     HttpStatus.BAD_REQUEST);
         }
         categoryService.saveCategory(category);
-        return new ResponseEntity<>(new ApiResponse(true, "Thêm Danh Mục Mới Thành Công:" + " " + category.getName()),
+        return new ResponseEntity<>(new ApiResponse(true, "Add success category:" + " " + category.getName()),
                 HttpStatus.CREATED);
     }
 
@@ -65,21 +65,20 @@ public class CategoryController {
 
     @PutMapping(path = "/update/{slug}")
     public @ResponseBody ResponseEntity<ApiResponse> editCategory(@PathVariable String slug, @RequestBody Category category) {
-        if (categoryService.findBySlug(slug) == null) {
-            return new ResponseEntity<>(new ApiResponse(false, "Không Tìm Thấy Danh Mục Nào Có Slug Là: " + slug),
-                    HttpStatus.NOT_FOUND);
+        String updateMsg = categoryService.updateCategory(slug, category);
+        if (updateMsg == "Update fail") {
+            return new ResponseEntity<>(new ApiResponse(false, "Can not found category slug to edit category"),
+                    HttpStatus.BAD_REQUEST);
         }
-        categoryService.updateCategory(slug, category);
-        return new ResponseEntity<>(new ApiResponse(true, "Sửa Thành Công Danh Mục:" + " " + category.getName()),
+        return new ResponseEntity<>(new ApiResponse(true, "Update success:" + " " + category.getName()),
                 HttpStatus.OK);
     }
 
-//  Update deleteCategory using sql query
+    //  Update deleteCategory using sql query
     @DeleteMapping(path = "/delete/{id}")
     public ResponseEntity<ApiResponse> deleteCategory(@PathVariable Integer id) {
         String deleteCategoryById = categoryService.deleteCategory(id);
-        if(deleteCategoryById == "This category still exists products or has been deleted")
-        {
+        if (deleteCategoryById == "This category still exists products or has been deleted") {
             return new ResponseEntity<>(new ApiResponse(false, deleteCategoryById), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(new ApiResponse(true, deleteCategoryById), HttpStatus.OK);

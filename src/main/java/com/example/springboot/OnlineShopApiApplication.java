@@ -22,10 +22,4 @@ public class OnlineShopApiApplication {
 		SpringApplication.run(OnlineShopApiApplication.class, args);
 	}
 
-//	@Bean
-//	public BCryptPasswordEncoder passwordEncoder() {
-//		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-//		return bCryptPasswordEncoder;
-//	}
-
 }

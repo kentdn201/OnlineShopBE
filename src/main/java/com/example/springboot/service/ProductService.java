@@ -96,12 +96,18 @@ public class ProductService {
         return existProduct;
     }
 
-    public void deleteProduct(String slug) throws Exception {
-        Product existProduct = productRepository.findBySlug(slug);
-        if (existProduct == null) {
-            throw new Exception("Sản phẩm không tồn tại");
+    public String deleteProduct(String slug) throws Exception {
+        try {
+            Product existProduct = productRepository.findBySlug(slug);
+            if (existProduct == null) {
+                return "This product is not available to delete";
+            }
+            productRepository.deleteById(existProduct.getId());
+            return "Delete success " + "product id is: " + existProduct.getId();
+        } catch (Exception e)
+        {
+            return "Can not delete this product has been ordered";
         }
-        productRepository.deleteById(existProduct.getId());
     }
 
     public Product findById(Integer productId) {

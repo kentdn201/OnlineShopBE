@@ -39,12 +39,18 @@ public class CategoryService {
         return categoryRepository.findById(id);
     }
 
-    public Category updateCategory(String slug, Category category) {
-        Category existCategory = categoryRepository.findBySlug(slug);
-        existCategory.setName(category.getName());
-        existCategory.setSlug(category.getSlug());
-        existCategory.setImage(category.getImage());
-        return categoryRepository.save(existCategory);
+    public String updateCategory(String slug, Category category) {
+        try {
+            Category existCategory = categoryRepository.findBySlug(slug);
+            existCategory.setName(category.getName());
+            existCategory.setSlug(category.getSlug());
+            existCategory.setImage(category.getImage());
+            categoryRepository.save(existCategory);
+            return "Update success";
+        } catch (Exception e)
+        {
+            return "Update fail";
+        }
     }
 
 //  update deleteCategory
