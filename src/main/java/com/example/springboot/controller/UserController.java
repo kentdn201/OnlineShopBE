@@ -1,8 +1,10 @@
 package com.example.springboot.controller;
 
 import com.example.springboot.common.ApiResponse;
+import com.example.springboot.config.ObjectMapperUtils;
 import com.example.springboot.dto.ResponseDto;
 import com.example.springboot.dto.SignupDto;
+import com.example.springboot.dto.user.UserDto;
 import com.example.springboot.dto.user.UserUpdateStatusDto;
 import com.example.springboot.model.User;
 import com.example.springboot.service.UserService;
@@ -32,8 +34,10 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User getUserById(@PathVariable(name = "userId") Integer userId) {
-        return userService.findByUserId(userId);
+    public UserDto getUserById(@PathVariable(name = "userId") Integer userId) {
+        User existUser = userService.findByUserId(userId);
+        UserDto userDto = ObjectMapperUtils.map(existUser, UserDto.class);
+        return userDto;
     }
 
     @PutMapping("/update/{userId}")
