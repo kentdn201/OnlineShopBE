@@ -1,6 +1,5 @@
 package com.example.springboot.model;
 
-import com.example.springboot.model.Enum.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -11,6 +10,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -37,6 +37,8 @@ public class Order {
     private String note;
     private String phoneNumber;
 
+    @ManyToOne
+    @JoinColumn(name = "order_status_id")
     private OrderStatus orderStatus;
 
     @OneToMany(mappedBy = "order")

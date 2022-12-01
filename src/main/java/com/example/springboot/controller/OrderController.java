@@ -1,8 +1,9 @@
 package com.example.springboot.controller;
 
 import com.example.springboot.common.ApiResponse;
+import com.example.springboot.dto.OrderStatus.OrderStatusDto;
+import com.example.springboot.dto.OrderStatus.OrderStatusEditDto;
 import com.example.springboot.dto.order.*;
-import com.example.springboot.model.Enum.OrderStatus;
 import com.example.springboot.model.Order;
 import com.example.springboot.model.OrderProduct;
 import com.example.springboot.model.User;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:3000/")
 @RestController
@@ -40,6 +40,9 @@ public class OrderController {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private OrderStatusServiceImpl orderStatusService;
 
     @Autowired
     private EmailSenderService emailSenderService;
@@ -66,10 +69,10 @@ public class OrderController {
         if (existUser == null) {
             return new ResponseEntity<>(new ApiResponse(false, "Your account is not available"), HttpStatus.BAD_REQUEST);
         }
-        
+
         Order order = new Order();
         order.setUser(existUser);
-        order.setOrderStatus(OrderStatus.NotDelivery);
+        order.setOrderStatus(orderStatusService.getOneById(1));
         order.setAddress(orderDto.getAddress());
         order.setTypePayment(orderDto.getTypePayment());
         order.setNote(orderDto.getNote());
@@ -127,9 +130,9 @@ public class OrderController {
         return new ResponseEntity<>(new ApiResponse(true, "Order Success"), HttpStatus.CREATED);
     }
 
-    @PutMapping("/edit/{id}/{userId}")
-    public ResponseEntity<ApiResponse> updateOrder(@PathVariable(name = "id") Integer id, @PathVariable(name = "userId") Integer userId, @RequestBody OrderStatusDto orderStatusDto) {
-        orderService.updateOrderDto(id, orderStatusDto);
+    @PutMapping("/edit/{id}/")
+    public ResponseEntity<ApiResponse> updateOrder(@PathVariable(name = "id") Integer id, @RequestBody OrderStatusEditDto orderStatusEditDto) {
+        orderService.updateOrderDto(id, orderStatusEditDto.getId());
         return new ResponseEntity<>(new ApiResponse(true, "Edit Success"), HttpStatus.OK);
     }
 }

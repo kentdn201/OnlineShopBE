@@ -6,6 +6,7 @@ import com.example.springboot.dto.order.OrderProductDto;
 import com.example.springboot.dto.order.OrderShowDto;
 import com.example.springboot.dto.order.OrderStatusDto;
 import com.example.springboot.model.OrderProduct;
+import com.example.springboot.model.OrderStatus;
 import com.example.springboot.model.exceptions.CustomException;
 import com.example.springboot.model.Enum.Role;
 import com.example.springboot.model.Order;
@@ -29,6 +30,9 @@ public class OrderService {
     private OrderProductService orderProductService;
     @Autowired
     private OrderProductRepository orderProductRepository;
+    
+    @Autowired
+    private OrderStatusServiceImpl orderStatusService;
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
@@ -53,6 +57,7 @@ public class OrderService {
 
 //      Luc mapping bi null len phai map theo cach cu~
         orderDetailDto.setCreateDate(orderDetail.getCreatedDate());
+        orderDetailDto.setOrderStatus(orderDetail.getOrderStatus());
         orderDetailDto.setUserId(orderDetail.getUser().getId());
         orderDetailDto.setOrderProductDtos(orderProductDtos);
         return orderDetailDto;
@@ -71,9 +76,10 @@ public class OrderService {
         return orderRepository.findById(id);
     }
 
-    public void updateOrderDto(Integer id, OrderStatusDto orderStatusDto) {
-        Order existOrder = orderRepository.findOrderById(id);
-        existOrder.setOrderStatus(orderStatusDto.getOrderStatus());
+    public void updateOrderDto(Integer orderId, Integer id) {
+        Order existOrder = orderRepository.findOrderById(orderId);
+        OrderStatus orderStatus = orderStatusService.getOneById(id);
+        existOrder.setOrderStatus(orderStatus);
         orderRepository.save(existOrder);
     }
 
