@@ -63,7 +63,7 @@ public class JWTTokenHelper {
     }
 
     private Date generateExpirationDate() {
-        return new Date(new Date().getTime() + expiresIn * 1000);
+        return new Date(new Date().getTime() + expiresIn * 1000 * 24 * 7);
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {

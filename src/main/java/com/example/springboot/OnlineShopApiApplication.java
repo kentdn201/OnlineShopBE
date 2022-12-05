@@ -18,8 +18,7 @@ import java.util.Arrays;
 
 @SpringBootApplication
 public class OnlineShopApiApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(OnlineShopApiApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(OnlineShopApiApplication.class, args);
+    }
 }
